@@ -1,0 +1,93 @@
+"""Which layer each module belongs to, and the order they may depend in.
+
+This is the project's shape, written down so it can be checked rather than
+believed. `tests/test_architecture.py` reads it and fails if any module
+imports something from a layer above its own.
+
+The order was not chosen by taste. Every cross-layer import in the project
+was counted and the ordering that leaves none pointing upward was searched
+for; this is it. Before the job_title extraction no such ordering existed,
+because sources and sheetops each imported the other.
+
+    core      pure logic. No network, no sheet, no Gmail. core/storage.py is
+              the one place local state files are read and written.
+    store     everything that talks to Google.
+    sources   reading the outside world into applications and decisions.
+    people    who to write to, and at what address.
+    sheetops  keeping the sheet correct.
+    apply     helping fill an application in.
+    outreach  writing and managing drafts.
+    flows     orchestration only; no logic of its own.
+    agent     a model that reads the state, acts within a budget, briefs.
+    console   the command line: a table of commands, their handlers, and
+              main.py, the `jobagent` command that builds the parser.
+"""
+
+import os
+
+# The layers are subpackages of this one: jobagent.core, jobagent.store, ...
+PACKAGE = "jobagent"
+
+LAYERS = ["core", "store", "sources", "people", "sheetops", "apply",
+          "outreach", "flows", "agent", "console"]
+
+LAYOUT = {
+    # core: pure logic, no IO, no other layer
+    "core": ["config", "date_utils", "status", "company_id", "company_match",
+        "confirmation_parser",
+             "app_identity", "company_aliases", "corrections", "job_title", "role_extract", "text_classifier", "job_posting",
+             "resume_bank", "sender_profile", "linkedin_helper", "hook_forms",
+             "shared_traits", "email_text", "posting_target", "desk_match", "bio_facts", "affinity",
+             "storage", "home", "launchd", "skills"],
+    # store: everything that touches the network or disk state
+    "store": ["google_auth", "gmail_client", "sheets", "calendar_client", "notify"],
+    # sources: reading the outside world into domain objects
+    "sources": ["app_scanner", "rejection_scanner", "reply_scanner", "link_finder",
+                "apply_capture", "confirmation_corpus", "muse", "claude_api",
+                "claude_cli", "llm", "job_finder", "interview_signals",
+                "interview_calendar", "interview_model", "rejection_model"],
+    # people: who to contact and at what address
+    "people": ["people_finder", "edgar_finder", "team_pages", "people_search",
+               "sourcing", "contact_finder", "contact_policy", "address_book",
+               "company_formats", "findability",
+               "recent_contacts", "network_audit", "common_ground",
+               "site_people", "site_discovery", "people_db"],
+    # outreach: writing and managing drafts
+    "outreach": ["draft_writer", "email_drafter", "auto_draft", "auto_outreach",
+                 "batch_outreach", "bulk_draft", "draft_cleanup", "stage_drafts",
+                 "style_profile", "style_check", "outreach_corpus",
+                 "outreach_retrieval", "outreach_kind", "reply_labels", "follow_up", "followup_model",
+                 "followup_scheduler", "reoutreach", "open_loops", "targets",
+                 "hit_rate"],
+    # sheetops: keeping the sheet correct
+    "sheetops": ["sheet_clean", "sheet_format", "dedupe", "fix_positions",
+                 "clean_positions", "location_backfill", "jd_backfill", "enrich",
+                 "stale"],
+    # apply: helping fill an application in
+    "apply": ["apply_autofill", "autofill_bookmarklet", "autofill_extension",
+              "cover_letter", "prep_package", "resume_pdf", "setup_wizard",
+              "tailor"],
+    # flows: orchestration only
+    "flows": ["auto_pipeline", "watch"],
+    # agent: a model with this project's functions as tools. toolbox is the
+    # whole of what it may touch; mcp_server exposes that over MCP; runner is
+    # the scheduled pass and the brief.
+    "agent": ["toolbox", "mcp_server", "runner"],
+    # console: the command line. commands.py is a table and imports nothing
+    # from the layers at all; handlers.py is the only module allowed to reach
+    # across all of them, because adapting a Namespace to a call is its job.
+    "console": ["commands", "handlers", "main"],
+}
+
+
+def folder(layer: str) -> str:
+    """A layer's folder, relative to the repository root."""
+    return os.path.join(PACKAGE, layer)
+
+
+# Scripts outside the layer folders. cli.py was once the largest file in the
+# project and was never checked by anything, because the layering test only
+# walked the layer folders. An entry point may import from any layer — that
+# is what makes it an entry point — but nothing may import *it*. Both are now
+# shims over console/main.py, which is the `jobagent` command.
+ENTRY_POINTS = ["cli.py", os.path.join(PACKAGE, "__main__.py")]

@@ -1,0 +1,78 @@
+venv/
+__pycache__/
+*.pyc
+credentials.json
+token.json
+.env
+past_outreach.txt
+.claude/
+career-ops/
+.DS_Store
+outreach_corpus.json
+_recipients_sample.json
+logs/
+# What cannot be rebuilt: your corrections, and the ledgers of what was
+# already researched, drafted and reported (core/storage.py), plus their
+# daily backups. Personal, and this repo can be published.
+data/
+rejection_model.pkl
+interview_model.pkl
+followup_model.pkl
+prep/
+resumes/
+
+# The filled-in resume: home address, EEO answers, salary expectations.
+# resume_bank.example.json has the same shape with placeholders.
+resume_bank.json
+
+# Sheet snapshots taken before destructive edits — data, not code, and they
+# carry the full application history including named contacts.
+sheet-backup-*.csv
+
+# Personal launchd agent: it hard-codes your home path.
+# jobtracker.plist.example is the template.
+com.*.jobtracker.plist
+logs/draft_headers.json
+
+# The sender's own identity: name, school, employer, contact details.
+# profile.example.json has the same shape with placeholders.
+profile.json
+
+# A frozen pull of every confirmation email in the mailbox, used to measure
+# the parser offline. Two years of one person's job search, and this repo is
+# public. tests/test_confirmation_parser.py skips when it is absent.
+tests/fixtures/confirmations.json
+
+# What `pip install -e .` and `pip install .` leave behind.
+*.egg-info/
+build/
+
+# --- Belt and braces -------------------------------------------------------
+# The rules above name the files this project actually writes. These catch the
+# same kinds of thing under a name nobody thought of: a scratch export, a
+# second virtualenv, a database or spreadsheet dropped in the tree.
+.venv/
+env/
+*.sqlite
+*.sqlite3
+*.db
+people.db
+*.csv
+*.SKIPPED
+out/
+output/
+exports/
+*.pem
+*.key
+service-account*.json
+client_secret*.json
+*credentials*.json
+*token*.json
+.env.*
+!.env.example
+profile*.json
+!profile.example.json
+resume_bank*.json
+!resume_bank.example.json
+*.pkl
+*.pickle

@@ -1,0 +1,125 @@
+{
+  "_comment": "Your resume, broken into reusable pieces. `tags` drive which bullets get suggested for a given posting — edit the tags freely, they are matching hints, not resume text. `text` is what actually goes on the resume, so keep it accurate.",
+  "profile": {
+    "name": "Your Name",
+    "email": "you@example.com",
+    "phone": "000-000-0000",
+    "address": "123 Example St, City, ST, 00000",
+    "location": "City, ST",
+    "citizenship": [
+      "Country A"
+    ],
+    "work_authorization": "Authorized to work without sponsorship",
+    "education": {
+      "school": "Your University",
+      "degree": "B.A. in Your Major",
+      "dates": "Aug 20XX — May 20XX",
+      "gpa": "0.0 / 4.0",
+      "coursework": [
+        "Course One",
+        "Course Two"
+      ],
+      "graduation_date": "May 20XX"
+    },
+    "skills": [
+      "Skill one",
+      "Skill two"
+    ],
+    "languages": [
+      "Language one"
+    ],
+    "certifications": [
+      "Certification one"
+    ],
+    "linkedin": "https://www.linkedin.com/in/your-handle",
+    "race_ethnicity": "",
+    "gender": "",
+    "sexual_orientation": "",
+    "hispanic_ethnicity": "",
+    "veteran_status": "",
+    "disability_conditions": null,
+    "willing_to_relocate": "Yes",
+    "referred_by": "No",
+    "salary_major_city": 0,
+    "salary_other": 0
+  },
+  "_experience_comment": "Order here is the order on the rendered resume (reverse-chronological). `section` decides which heading a role sits under. Bullets are attached by matching `company` + `role`.",
+  "experience": [
+    {
+      "company": "Example Corp",
+      "role": "Your Role",
+      "location": "City, ST",
+      "dates": "Jun 20XX — Present",
+      "section": "experience"
+    }
+  ],
+  "bullets": [
+    {
+      "id": "example-bullet",
+      "company": "Example Corp",
+      "role": "Your Role",
+      "dates": "Jun 20XX — Present",
+      "text": "",
+      "tags": [
+        "underwriting",
+        "insurance",
+        "property",
+        "risk",
+        "documentation",
+        "compliance",
+        "audit",
+        "operations",
+        "attention to detail"
+      ]
+    }
+  ],
+  "_category_leads_comment": "Optional. For each resume category, the bullet ids that should lead it, strongest first. Categories: equity_research, sales_trading, investment_banking, quant_data, risk_credit. A category left out ranks bullets on the posting's wording alone.",
+  "category_leads": {
+    "risk_credit": [
+      "example-bullet"
+    ]
+  },
+  "projects": [
+    {
+      "id": "example-project",
+      "title": "A project of yours",
+      "text": "What you built and what it did.",
+      "tags": [
+        "machine learning",
+        "python",
+        "automation",
+        "data",
+        "engineering",
+        "impact"
+      ]
+    }
+  ],
+  "answers": {
+    "_comment": "Prose answers for the ATS prep pack. Personal narrative, so it lives here rather than in prep_package.py. {company} is substituted at render time.",
+    "why_this_company_opening": "One or two sentences on your background and the work you have enjoyed most.",
+    "why_leaving": "Why you are looking, in your own words.",
+    "greatest_strength": "A strength, with one concrete result attached."
+  },
+  "background": {
+    "_comment": "Prompt-ready bios. They name employers and a bank he asks not to be named in drafts, so they live here, not in the prompts themselves -- the repository can be published and this file is not.",
+    "outreach": "- Your degree, school and graduation date.\n- Your current role and employer.\n- Earlier roles worth mentioning, and how to refer to them.\n- Your tools, languages and work authorization.",
+    "job_search": "- Your degree and school.\n- Your current role.\n- Earlier roles.\n- Tools, languages, work authorization.",
+    "evidence": [
+      {
+        "pattern": "\\b(model|quantitative|forecast)\\b",
+        "text": "a line of your own evidence for quantitative roles"
+      },
+      {
+        "pattern": "\\b(credit|bond|structured)\\b",
+        "text": "a line of your own evidence for credit roles"
+      }
+    ],
+    "opener": "My name is Your Name. One sentence on your degree and current role.",
+    "signature_contact": "you@example.com | 000-000-0000",
+    "never_use": [
+      "you@example.com",
+      "000-000-0000"
+    ],
+    "evidence_fallback": "a general line of experience, used when no pattern matches"
+  }
+}

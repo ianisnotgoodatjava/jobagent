@@ -1,0 +1,458 @@
+"""Tests for the mistakes this project has actually made.
+
+The existing suite covers reasoning. This one covers two classes of failure
+that reached main anyway:
+
+  * A refactor left `done` and `batch_outreach` undefined inside
+    auto_draft.run. Both are NameErrors on a path that only runs with a
+    model credential set, so nothing here imported it, no test touched it,
+    and the suite stayed green. pyflakes finds that class in a tenth of a
+    second; not running it is the only reason it shipped.
+
+  * Classifiers that look obviously right and are not. Every case below is
+    one that was observed going wrong on real data, not an invented example.
+"""
+
+import os
+import subprocess
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from jobagent.people import company_formats
+from jobagent.people import people_search
+from jobagent.people import recent_contacts
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+class TestNoUndefinedNames:
+    """pyflakes over the project, as a test.
+
+    This is the cheap half of correctness. An undefined name is a crash the
+    moment that branch runs, and the branch that shipped broken was the one
+    behind an API credential -- the least likely to be exercised by hand.
+    """
+
+    def test_pyflakes_is_clean(self):
+        # The package as well as the scripts at the root. Listing only the
+        # root's .py files stopped covering the layers the day they moved
+        # into folders, and nobody noticed for the same reason as before.
+        modules = [f for f in os.listdir(ROOT) if f.endswith(".py")]
+        modules.append("jobagent")
+        result = subprocess.run(
+            [sys.executable, "-m", "pyflakes", *modules],
+            cwd=ROOT, capture_output=True, text=True)
+        assert result.returncode == 0, (
+            "pyflakes found problems:\n" + result.stdout + result.stderr)
+
+
+class TestScheduledScriptsRun:
+    """The launchd scripts, run from wherever launchd starts them.
+
+    Making the README portable replaced the hard-coded `cd` in run_auto.sh
+    with the placeholder meant only for the plist template. Every scheduled
+    run then exited on line 17 into a stderr log nobody reads, and the sheet
+    went a week without a scan. A placeholder belongs in a template the
+    README tells you to fill in, never in a script that runs as-is.
+    """
+
+    def test_no_placeholder_in_a_runnable_script(self):
+        for name in os.listdir(ROOT):
+            if name.endswith(".sh"):
+                with open(os.path.join(ROOT, name), encoding="utf-8") as f:
+                    assert "/ABSOLUTE/PATH" not in f.read(), name
+
+
+class TestSeniorityBand:
+    """Which titles are worth writing to.
+
+    The target is a VP or Director: a Managing Director rarely answers an
+    unsolicited note and an Analyst cannot speak for the desk.
+    """
+
+    def test_vice_president_is_not_senior(self):
+        # "president" matched inside "Vice President", so a VP was binned with
+        # a global co-head -- the exact people this ranking exists to surface.
+        assert people_search.band("Vice President - FIG & Sponsors Risk "
+                                  "Solutions") == people_search.BAND_TARGET
+        assert people_search.band("Senior Vice President of Institutional "
+                                  "Sales Trading") == people_search.BAND_TARGET
+
+    def test_a_board_seat_is_not_a_desk(self):
+        """An org chart publishes a board seat as "Director", which the target
+        pattern reads as the band we want. A search for someone to ask about a
+        Ratings Associate opening at a rating agency returned three of its
+        non-executive directors at the top — all three on the board, none of
+        them working there. An exchange returned two of its own the same
+        way."""
+        for title in ("Director",
+                      "Independent Director",
+                      "Corporate Board Director",
+                      "Public Director",
+                      "Board Member",
+                      "Non-exec Director"):
+            assert people_search.band(title) == people_search.BAND_NOT_A_DESK, title
+
+    def test_a_governance_office_is_not_a_desk(self):
+        """"EVP, General Counsel & Corporate Secretary" is banded a target by
+        the "evp" in it, and is nobody to ask what a desk does."""
+        for title in ("EVP, General Counsel & Corporate Secretary",
+                      "EVP & CHRO",
+                      "Chief Human Resources Officer"):
+            assert people_search.band(title) == people_search.BAND_NOT_A_DESK, title
+
+    def test_a_real_department_director_still_counts(self):
+        """The rule keys on the unqualified form. A department head is
+        published as "Director of X", and must not be swept up with the board."""
+        for title in ("Director Of Operations",
+                      "Director of Marketing and Communications",
+                      "Senior Director Of Program Development",
+                      "Director, Structured Finance"):
+            assert people_search.band(title) == people_search.BAND_TARGET, title
+
+    def test_the_people_actually_drafted_to_survive_the_filter(self):
+        """The four contacts drafted on 2026-11-22. A filter that drops a
+        board member and also drops these would have been no use."""
+        for title in ("Senior Research Associate",
+                      "Principal",
+                      "Vice President of Business Development",
+                      "Assistant Vice President - Analyst"):
+            assert people_search.band(title) == people_search.BAND_TARGET, title
+
+    def test_actual_president_is_senior(self):
+        assert people_search.band(
+            "President, Rockefeller Global Investment Management"
+        ) == people_search.BAND_SENIOR
+
+    def test_managing_director_and_heads_are_senior(self):
+        for title in ("Managing Director, Global co-Head of Financial "
+                      "Institutions Group",
+                      "Head of Alternative Investments",
+                      "Chief Investment Officer"):
+            assert people_search.band(title) == people_search.BAND_SENIOR
+
+    def test_c_suite_acronyms_are_senior(self):
+        # "SVP and CFO" was banded a VP target: the old pattern only knew
+        # CEO and CTO.
+        for title in ("SVP and CFO", "EVP & COO", "Group CIO",
+                      "CRO, Americas", "CEO"):
+            assert people_search.band(title) == people_search.BAND_SENIOR, title
+
+    def test_mid_level_is_kept_and_ranked_after_vp(self):
+        """Plain Associates were dropped as junior and Managers read as
+        unknown, so a search never surfaced anyone a step below VP."""
+        for title in ("Associate", "Research Associate",
+                      "Manager, Structured Finance", "Supervisor, Loan Ops"):
+            assert people_search.band(title) == people_search.BAND_MID, title
+        assert people_search.band("AVP, Credit Risk") == \
+            people_search.BAND_TARGET
+        for title in ("Analyst", "Summer Associate Intern",
+                      "Administrative Assistant"):
+            assert people_search.band(title) == people_search.BAND_JUNIOR, title
+        ranked = people_search.rank(
+            [{"name": "A B", "title": "Associate"},
+             {"name": "C D", "title": "Vice President"},
+             {"name": "E F", "title": "Analyst"},
+             {"name": "G H", "title": "Managing Director"}],
+            drop_out_of_band=True)
+        assert [p["title"] for p in ranked] == ["Vice President", "Associate"]
+
+    def test_cdo_desk_is_not_a_chief(self):
+        assert people_search.band("Vice President, CDO Trading") == \
+            people_search.BAND_TARGET
+
+    def test_director_is_target_even_with_a_second_title(self):
+        assert people_search.band(
+            "Director of Public Equity Research, Portfolio Manager"
+        ) == people_search.BAND_TARGET
+
+    def test_analysts_and_associates_are_too_junior(self):
+        assert people_search.band("Corporate Banking Analyst") == \
+            people_search.BAND_JUNIOR
+        assert people_search.band("Client Associate") == \
+            people_search.BAND_JUNIOR
+
+
+class TestSameEmployer:
+    """Whether a mail domain belongs to a company.
+
+    A wrong domain is worse than no domain: every address built on it
+    bounces, and bounces are charged against the sender for later mail.
+    """
+
+    def test_shared_prefix_is_not_a_match(self):
+        # AlphaSights matched alphacapital.online -- two firms that start
+        # alike and are otherwise unrelated.
+        assert not company_formats._same_employer("alphacapital", "alphasights")
+
+    def test_exact_and_contained_names_match(self):
+        assert company_formats._same_employer("nomura", "nomura")
+        assert company_formats._same_employer("bancofcal", "bancofcalifornia")
+
+    def test_short_labels_are_refused(self):
+        # "us" in us.mufg.jp must not claim every company starting with those
+        # two letters.
+        assert not company_formats._same_employer("us", "usbank")
+
+
+class TestRepeatContacts:
+    """A second introduction inside a year reads as generated, not meant."""
+
+    def test_first_touch_to_a_recent_contact_is_a_duplicate(self):
+        recent = {"a@b.com": recent_contacts.datetime.date.today()}
+        assert recent_contacts.is_duplicate(
+            "a@b.com", "Recent Example Graduate Inquiring about X at Y", recent)
+
+    def test_follow_ups_are_not_duplicates(self):
+        recent = {"a@b.com": recent_contacts.datetime.date.today()}
+        for subject in ("Re: Recent Example Graduate Inquiring about X",
+                        "Following up — Research Analyst"):
+            assert recent_contacts.is_duplicate("a@b.com", subject, recent) is None
+
+    def test_own_addresses_are_never_duplicates(self):
+        # 16 drafts sit addressed to these. A sweep that ignored the
+        # distinction would delete them.
+        for address in recent_contacts.OWN_ADDRESSES:
+            recent = {address: recent_contacts.datetime.date.today()}
+            assert recent_contacts.is_duplicate(
+                address, "Recent Example Graduate Inquiring about X", recent) is None
+
+    def test_an_unknown_address_is_not_a_duplicate(self):
+        assert recent_contacts.is_duplicate(
+            "new@firm.com", "Recent Example Graduate Inquiring about X", {}) is None
+
+
+class TestSheetCache:
+    """The row cache, and the invalidation that makes it safe.
+
+    38 call sites ask for every row and a pipeline run walks most of them, so
+    the cache is worth roughly fourteen seconds a run. The risk it introduces
+    is the only thing worth testing: a read that predates a write would have
+    one step decide against rows another step had already rewritten.
+    """
+
+    def _fake_sheet(self, monkeypatch, rows):
+        from jobagent.store import sheets
+        calls = {"n": 0}
+
+        def fake_service():
+            class Values:
+                def get(self, **kw):
+                    calls["n"] += 1
+                    return self
+
+                def execute(self):
+                    return {"values": rows}
+
+            class Spreadsheets:
+                def values(self):
+                    return Values()
+
+            class Svc:
+                def spreadsheets(self):
+                    return Spreadsheets()
+
+            return Svc()
+
+        monkeypatch.setattr(sheets, "_service", fake_service)
+        sheets._invalidate()
+        return calls
+
+    def test_second_read_does_not_hit_the_api(self, monkeypatch):
+        from jobagent.store import sheets
+        calls = self._fake_sheet(monkeypatch, [["Acme", "Analyst"]])
+        sheets.list_rows()
+        sheets.list_rows()
+        sheets.list_rows()
+        assert calls["n"] == 1
+
+    def test_refresh_forces_a_reread(self, monkeypatch):
+        from jobagent.store import sheets
+        calls = self._fake_sheet(monkeypatch, [["Acme", "Analyst"]])
+        sheets.list_rows()
+        sheets.list_rows(refresh=True)
+        assert calls["n"] == 2
+
+    def test_invalidate_forces_a_reread(self, monkeypatch):
+        from jobagent.store import sheets
+        calls = self._fake_sheet(monkeypatch, [["Acme", "Analyst"]])
+        sheets.list_rows()
+        sheets._invalidate()
+        sheets.list_rows()
+        assert calls["n"] == 2
+
+    def test_callers_cannot_mutate_each_others_rows(self, monkeypatch):
+        # Several callers annotate the dicts they are handed. Sharing the
+        # cached objects would let one step's bookkeeping appear in another
+        # step's input.
+        from jobagent.store import sheets
+        self._fake_sheet(monkeypatch, [["Acme", "Analyst"]])
+        first = sheets.list_rows()
+        first[0]["scratch"] = "x"
+        assert "scratch" not in sheets.list_rows()[0]
+
+    def test_every_writer_invalidates(self):
+        # The cache is only safe while this holds, and a new writer added
+        # without the call is exactly the change that would break it quietly.
+        import ast
+        import inspect
+
+        from jobagent.store import sheets
+        tree = ast.parse(inspect.getsource(sheets))
+        writers = {"append_job_row", "update_row", "update_rows",
+                   "delete_rows", "sort_by_applied_date", "ensure_headers"}
+        for node in tree.body:
+            if isinstance(node, ast.FunctionDef) and node.name in writers:
+                assert "_invalidate" in ast.dump(node), (
+                    f"sheets.{node.name} writes without invalidating the cache")
+
+
+class TestDraftHeaderStore:
+    """The on-disk draft header cache, and what keeps it honest.
+
+    Listing draft ids costs one quota unit a page; reading each header costs
+    five, which was the whole thirteen seconds. Almost nothing changes between
+    runs, so almost nothing needs reading again -- 14.1s becomes 0.5s.
+
+    The stored message id is what makes that safe. Gmail mints a new message
+    id whenever a draft is edited while the draft id stays put, so a mismatch
+    means the content moved. That was verified against the live API before
+    this was built, not assumed.
+    """
+
+    def _gmail(self, monkeypatch, tmp_path, drafts, headers, fetched):
+        from jobagent.store import gmail_client
+
+        class Drafts:
+            def list(self, **kw):
+                return self
+
+            def get(self, userId=None, id=None, format=None):
+                fetched.append(id)
+                return {"message": {"payload": {"headers": [
+                    {"name": "To", "value": headers[id]["to"]},
+                    {"name": "Subject", "value": headers[id]["subject"]},
+                    {"name": "Date", "value": "Mon, 1 Sep 2026 00:00:00 +0000"},
+                ]}}}
+
+            def execute(self):
+                return {"drafts": drafts}
+
+        class Batch:
+            def __init__(self, callback):
+                self._cb, self._items = callback, []
+
+            def add(self, request, request_id=None):
+                self._items.append((request_id, request))
+
+            def execute(self):
+                for rid, req in self._items:
+                    self._cb(rid, req, None)
+
+        class Users:
+            def drafts(self):
+                return Drafts()
+
+        class Svc:
+            def users(self):
+                return Users()
+
+            def new_batch_http_request(self, callback):
+                return Batch(callback)
+
+        monkeypatch.setattr(gmail_client, "_service", lambda: Svc())
+        monkeypatch.setattr(gmail_client, "_DRAFT_STORE",
+                            str(tmp_path / "draft_headers.json"))
+        monkeypatch.setattr(gmail_client, "_BATCH_PAUSE", 0)
+        gmail_client._DRAFT_CACHE.clear()
+        return gmail_client
+
+    def test_second_run_fetches_nothing(self, monkeypatch, tmp_path):
+        drafts = [{"id": "d1", "message": {"id": "m1"}}]
+        headers = {"d1": {"to": "a@b.com", "subject": "First"}}
+        fetched = []
+        g = self._gmail(monkeypatch, tmp_path, drafts, headers, fetched)
+
+        assert g.draft_headers()[0]["subject"] == "First"
+        assert fetched == ["d1"]
+
+        g._DRAFT_CACHE.clear()
+        assert g.draft_headers()[0]["subject"] == "First"
+        assert fetched == ["d1"], "second run re-fetched an unchanged draft"
+
+    def test_an_edited_draft_is_refetched(self, monkeypatch, tmp_path):
+        drafts = [{"id": "d1", "message": {"id": "m1"}}]
+        headers = {"d1": {"to": "a@b.com", "subject": "Original"}}
+        fetched = []
+        g = self._gmail(monkeypatch, tmp_path, drafts, headers, fetched)
+        g.draft_headers()
+
+        # Editing a draft keeps its id and changes its message id.
+        drafts[0]["message"]["id"] = "m2"
+        headers["d1"]["subject"] = "Edited"
+        g._DRAFT_CACHE.clear()
+
+        assert g.draft_headers()[0]["subject"] == "Edited"
+        assert fetched == ["d1", "d1"]
+
+    def test_deleted_drafts_leave_the_store(self, monkeypatch, tmp_path):
+        drafts = [{"id": "d1", "message": {"id": "m1"}},
+                  {"id": "d2", "message": {"id": "m2"}}]
+        headers = {"d1": {"to": "a@b.com", "subject": "One"},
+                   "d2": {"to": "c@d.com", "subject": "Two"}}
+        g = self._gmail(monkeypatch, tmp_path, drafts, headers, [])
+        g.draft_headers()
+
+        drafts.pop()                      # d2 deleted in Gmail
+        g._DRAFT_CACHE.clear()
+        assert {d["id"] for d in g.draft_headers()} == {"d1"}
+        assert "d2" not in g._load_draft_store()
+
+
+class TestReadmeMatchesTheCLI:
+    """The README is the first thing a reader runs, and it drifts silently.
+
+    It documented `--new-only` after that flag became the default and was
+    replaced by `--redo`, and before that it claimed the CLI could not draft
+    email at all -- months after auto-draft could. Both were found by hand.
+    Nothing about a stale command fails until someone types it.
+    """
+
+    @staticmethod
+    def _readme() -> str:
+        with open(os.path.join(ROOT, "README.md"), encoding="utf-8") as f:
+            return f.read()
+
+    @staticmethod
+    def _cli_help(*args) -> str:
+        result = subprocess.run(
+            [sys.executable, os.path.join(ROOT, "cli.py"), *args, "--help"],
+            capture_output=True, text=True, cwd=ROOT, timeout=120)
+        return result.stdout + result.stderr
+
+    def test_every_documented_command_exists(self):
+        import re
+        documented = set(re.findall(r"python cli\.py ([a-z][a-z-]+)",
+                                    self._readme()))
+        assert documented, "no commands found in the README"
+        known = self._cli_help()
+        missing = sorted(c for c in documented if f"{c}" not in known)
+        assert not missing, f"README names commands the CLI lacks: {missing}"
+
+    def test_every_documented_flag_exists(self):
+        """Matched per command, since --days means different things to
+        different subcommands and a flag can be real but on the wrong one."""
+        import re
+        pairs = re.findall(r"python cli\.py ([a-z][a-z-]+)((?: --?[a-z-]+[^\n|#]*)*)",
+                           self._readme())
+        problems = []
+        for command, tail in pairs:
+            flags = set(re.findall(r"--[a-z][a-z-]+", tail))
+            if not flags:
+                continue
+            help_text = self._cli_help(command)
+            for flag in sorted(flags):
+                if flag not in help_text:
+                    problems.append(f"{command} {flag}")
+        assert not problems, f"README uses flags these commands lack: {problems}"

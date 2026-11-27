@@ -1,0 +1,24 @@
+{
+  "_comment": "Copy to profile.json and fill in. profile.json is gitignored: it is the only place the sender's identity lives, so the code can be published without publishing a CV.",
+  "name": "Jane Doe",
+  "email": "jane.doe@example.com",
+  "phone": "",
+  "school": "Example University",
+  "school_short": "Example",
+  "degree": "Economics",
+  "graduated": "recently",
+  "employer": "Example Corp",
+  "job_title": "Your Job Title",
+  "school_email_domain": "example.edu",
+  "sign_off": "Best regards",
+  "subject_prefix": "Recent {school_short} Graduate Inquiring about",
+  "resume_path": "~/Resume.pdf",
+  "_common_ground": "What you share with people worth finding at a firm, beyond the schools, languages and employers already in resume_bank.json. kind is one of heritage, group, school, language, sport, hobby, employer, place; terms are the phrases a bio would use (the label if omitted); search is what a hand-run LinkedIn search should use. Matched only against what a person states about themselves, never a name.",
+  "common_ground": [
+    {"kind": "sport", "label": "rowing", "terms": ["rowing", "rower", "crew"]},
+    {"kind": "hobby", "label": "chess", "terms": ["chess"]},
+    {"kind": "language", "label": "Portuguese", "terms": ["Portuguese"]},
+    {"kind": "group", "label": "Toastmasters"},
+    {"kind": "place", "label": "Lisbon", "terms": ["Lisbon", "Lisboa"]}
+  ]
+}
