@@ -194,3 +194,56 @@ class TestTheCommand:
         from jobagent.agent import toolbox
         assert "tailor_resume" in toolbox.TOOLS
         assert toolbox.TOOLS["tailor_resume"].writes is False
+
+
+class TestLeadBulletsComeFromTheBank:
+    """Which bullets lead a category is the resume owner's data, not code.
+
+    The ids used to be written into prep_package.CATEGORIES, which put one
+    person's resume structure in every copy of the code. They live in
+    resume_bank.json now, under "category_leads".
+    """
+
+    @staticmethod
+    def _bank():
+        return {"bullets": [
+            {"id": "alpha", "tags": ["valuation"], "text": "Built a valuation model."},
+            {"id": "beta", "tags": ["python"], "text": "Wrote internal tooling."},
+            {"id": "gamma", "tags": ["credit"], "text": "Reviewed loan files."},
+        ]}
+
+    PARSED = {"requirements": ["valuation experience"], "responsibilities": [],
+              "text": ""}
+
+    def test_the_banks_order_beats_the_postings_wording(self):
+        from jobagent.apply import prep_package
+        bank = self._bank()
+        bank["category_leads"] = {"risk_credit": ["beta", "gamma"]}
+        ranked = prep_package.rank_bullets(bank, self.PARSED, "risk_credit")
+        assert [b["id"] for _, b in ranked][:2] == ["beta", "gamma"]
+
+    def test_a_bank_without_the_key_still_ranks_every_category(self):
+        from jobagent.apply import prep_package
+        for category in prep_package.CATEGORIES:
+            ranked = prep_package.rank_bullets(self._bank(), self.PARSED, category)
+            assert len(ranked) == 3
+            # with nothing leading, the posting's own wording decides
+            assert ranked[0][1]["id"] == "alpha"
+
+    def test_no_bullet_ids_are_written_into_the_code(self):
+        from jobagent.apply import prep_package
+        for name, spec in prep_package.CATEGORIES.items():
+            assert not spec.get("lead"), f"{name} hard-codes lead bullets"
+
+    def test_the_example_bank_documents_the_key(self):
+        import json
+        from jobagent.apply import prep_package
+        with open(os.path.join(ROOT, "resume_bank.example.json"), encoding="utf-8") as f:
+            bank = json.load(f)
+        ids = ({b["id"] for b in bank.get("bullets", [])}
+               | {p["id"] for p in bank.get("projects", [])})
+        leads = bank.get("category_leads")
+        assert leads, "the example should show what category_leads looks like"
+        for category, lead in leads.items():
+            assert category in prep_package.CATEGORIES
+            assert set(lead) <= ids, f"{category} names ids the example lacks"

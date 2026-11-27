@@ -27,24 +27,33 @@ from jobagent.core import sender_profile  # noqa: E402
 # docstrings either, which is where it survived the first pass and where a
 # public clone would still have shown it.
 #
-# Kept as SHA-256 hashes of each forbidden token, so this file does not spell
-# the name out either and the check still works on a fresh clone. Every word
-# token of a line is hashed, and so is each "a_b" pair inside a snake_case
-# token, which is how the name appeared joined to its surname.
+# Kept as SHA-256 hashes of each forbidden token, lower-cased, so this file
+# does not spell the name out either and the check still works on a fresh
+# clone. Every word token of a line is lower-cased and hashed, and so is each
+# "a_b" pair inside a snake_case token, which is how the name appeared joined
+# to the surname. Covered: the first name, the surname, both run together,
+# both joined by an underscore, and inside camelCase, in any capitalisation.
 FIRST_OWNER_HASHES = frozenset({
-    "5dfaaebff3e8ec0b796b47c7c674652150d92a16837946220d7efea32b8a854d",
-    "6140545b861c9ba08c082f011cb683552c2db6185efb3bf4d928177a70119cd8",
     "b54a95127a4b573f41e335fdbd339dcc2208fbfb1ae0b6fab7599d6e2d6ec754",
-    "706efceb01660c71fa747170bcf20d4e1285796b5d61e722ae2aabd4b54fb408",
+    "eb9e5c2a708dd6c4b57088c96553de8303cf431b5e42a0630625fa08d8dd6d6b",
+    "a012d2de813fbadf9c3dab190ef19bf8eb5b0b6efe29353bba4c9bcfbbba6eda",
+    "37f23b182c2b8e93a0fd3d35f7c8eb5e1c02f173da2888f6246258e4f75bb233",
 })
 _TOKEN = re.compile(r"\w+")
 
 
+_WORD = re.compile(r"[A-Z]?[a-z]+|[A-Z]+(?![a-z])|\d+")
+
+
 def _names_first_owner(text):
     for token in _TOKEN.findall(text):
-        parts = token.split("_")
-        pieces = {token, *parts} | {"_".join(parts[i:i + 2])
-                                     for i in range(len(parts) - 1)}
+        parts = token.lower().split("_")
+        # camelCase too: "SomeNameThing" is checked as some, name, thing
+        # and as each adjacent pair run together.
+        words = [w.lower() for w in _WORD.findall(token)]
+        pieces = ({token.lower(), *parts, *words}
+                  | {"_".join(parts[i:i + 2]) for i in range(len(parts) - 1)}
+                  | {"".join(words[i:i + 2]) for i in range(len(words) - 1)})
         if any(hashlib.sha256(p.encode()).hexdigest() in FIRST_OWNER_HASHES
                for p in pieces):
             return True

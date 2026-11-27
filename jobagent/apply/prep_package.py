@@ -33,33 +33,28 @@ OUT_ROOT = "prep"
 CATEGORIES = {
     "equity_research": {
         "label": "Equity / Investment Research",
-        "lead": [],
         "keywords": ["research", "equity", "coverage", "analyst", "models",
                      "earnings", "valuation", "sector", "publishing", "notes"],
     },
     "sales_trading": {
         "label": "Sales & Trading / Markets",
-        "lead": [],
         "keywords": ["trading", "sales", "desk", "markets", "derivatives",
                      "rates", "fx", "commodities", "options", "hedging",
                      "execution", "client"],
     },
     "investment_banking": {
         "label": "Investment Banking / Corporate Finance",
-        "lead": [],
         "keywords": ["banking", "m&a", "capital raising", "modeling", "dcf",
                      "pitch", "transaction", "coverage", "lbo", "project finance"],
     },
     "quant_data": {
         "label": "Quant / Data / Technology",
-        "lead": [],
         "keywords": ["python", "machine learning", "data", "quantitative",
                      "backtest", "statistics", "sql", "engineering",
                      "automation", "modeling", "programming"],
     },
     "risk_credit": {
         "label": "Risk / Credit / Underwriting",
-        "lead": [],
         "keywords": ["risk", "credit", "underwriting", "insurance", "exposure",
                      "compliance", "policy", "portfolio risk", "counterparty"],
     },
@@ -93,7 +88,7 @@ def detect_category(position: str, parsed: dict) -> str:
 def category_lead(bank: dict, category: str) -> list[str]:
     """The bullet ids that lead this category, from resume_bank.json."""
     leads = (bank or {}).get("category_leads") or {}
-    return [i for i in leads.get(category, CATEGORIES[category]["lead"])
+    return [i for i in leads.get(category, [])
             if isinstance(i, str)]
 
 
