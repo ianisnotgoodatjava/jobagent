@@ -33,7 +33,7 @@ def _trim_title(title: str, company: str) -> str:
     """Drops a company already inside the title.
 
     Every opening appends "at {company}", so a title stored as "US Economist
-    at MUFG" produced "your work as a US Economist at MUFG at MUFG".
+    at ZDV" produced "your work as a US Economist at ZDV at ZDV".
     """
     import re
     return re.sub(rf"\s+(?:at|with|of)\s+{re.escape(company)}\s*$", "",

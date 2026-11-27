@@ -1,7 +1,7 @@
 """What a published bio says about someone, beyond their name and title.
 
-A firm's bio page is a paragraph: "Prior to joining Ankura, Jane was a Vice
-President at Moody's. She holds a B.S. in Finance from New York University
+A firm's bio page is a paragraph: "Prior to joining Stoford, Jane was a Vice
+President at Normere's. She holds a B.S. in Finance from New York University
 and is a CFA charterholder." Kept as a title alone, that paragraph throws
 away the three facts that decide whether a cold email lands: the desk she
 came from, the school she shares or does not share with the sender, and how
@@ -34,7 +34,7 @@ _JOIN = r"(?:\s+(?:of|and|for|the|&|in|de)\s+|\s+)"
 # Chicago, Graduate School of Business" is not in Graduate School).
 _CITY = (rf"(?:,\s+(?!(?:[A-Z][a-z]+\s+)?{_SCHOOL_WORD}\b)[A-Z][a-z]+"
          rf"(?:\s+[A-Z][a-z]+)?(?=[\s.,;)]|$))?")
-# "New York University", "University of California, Berkeley",
+# "New York University", "University of California, Halstead",
 # "the Wharton School of the University of Pennsylvania".
 _SCHOOL = re.compile(
     rf"College of William (?:and|&) Mary|"
@@ -251,7 +251,7 @@ def _tidy_school(name: str) -> str:
 _ORG = (r"(?P<org>(?:[A-Z][\w&'.\-]*|[A-Z]{2,})"
         r"(?:(?:\s+|\s*&\s*|\s+(?:of|de|du|la)\s+)(?:[A-Z][\w&'.\-]*|[A-Z]{2,}))*)")
 _HIRE = [
-    # "Prior to joining Ankura, she was a Vice President at Moody's"
+    # "Prior to joining Stoford, she was a Vice President at Normere's"
     rf"(?:Prior to|Before)\s+(?:joining|her|his|their|that)[^,]*,\s+[^.]*?\b(?:at|with|for)\s+{_ORG}",
     rf"(?:[Pp]reviously|[Ff]ormerly),?\s+(?:(?:he|she|they|[A-Z][a-z]+)\s+)?(?:worked|served|was|spent|held)[^.]*?\b(?:at|with|for)\s+{_ORG}",
     rf"(?:began|started)\s+(?:her|his|their)\s+career\s+(?:[^.]*?\b)?(?:at|with)\s+{_ORG}",
@@ -329,7 +329,7 @@ def employers(text: str, current: str = "") -> list[dict]:
 
 
 def _split_orgs(sentence: str, start: int) -> list[str]:
-    """"Goldman Sachs, Morgan Stanley and Citi" -> three firms."""
+    """"Quenworth Selford, Harfield Rosley and Belhaven" -> three firms."""
     rest = sentence[start:]
     rest = re.split(r"(?<![A-Z])\.(?=\s|$)|[;:()]|\s[-–—]\s", rest, maxsplit=1)[0]
     pieces = re.split(r",\s+(?:and\s+)?|\s+and\s+", rest)

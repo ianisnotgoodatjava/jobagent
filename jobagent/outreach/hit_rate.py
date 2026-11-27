@@ -156,8 +156,8 @@ def _resolve(thread: list[dict], opener: dict) -> dict:
     Only a message dated at or after the email counts as answering it. That
     sounds too obvious to state, and it was the first thing this got wrong:
     taking the earliest human message in the thread gave
-    nora.vance@kroll.com a reply three months before the email that it
-    answered, and rcalder@valuationresearch.com one seventeen months before.
+    nora.vance@brincroft.com a reply three months before the email that it
+    answered, and rcalder@torcroftresearch.com one seventeen months before.
     Both were earlier conversations with the same person, and `max(0, ...)`
     on the gap turned every one of them into a tidy nought, which is why
     most replies read as same-day and the median latency came out at zero.

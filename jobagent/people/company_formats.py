@@ -180,7 +180,7 @@ def _slugify(text: str) -> str:
 
     Reads through company_id so a name and its aliases agree here with every
     other place that asks. It used to build its own key from _core, which
-    reduced "S&P Global" to "sp" -- and this function decides which domain an
+    reduced "Calstead Global" to "sp" -- and this function decides which domain an
     employer's mail goes to, so a two-character key here is a bounced email.
     """
     from jobagent.core import company_id
@@ -191,7 +191,7 @@ def _same_employer(label: str, want: str) -> bool:
     """Whether a domain label and a company slug name the same employer.
 
     One must contain the other from the start. Comparing only the first few
-    characters matched AlphaSights to alphacapital.online -- two firms that
+    characters matched Thorhaven to alphacapital.online -- two firms that
     share a prefix and nothing else -- and a wrong domain is worse than none,
     because every address built on it bounces.
     """
@@ -217,7 +217,7 @@ def domain_for(company: str, book: dict | None = None) -> tuple[str, str]:
         if domain in PERSONAL_DOMAINS or not (entry.get("delivered") or []):
             continue
         # Every label, not just the first: the employer's name sits in the
-        # middle of us.mufg.jp, and reading only "us" found nothing.
+        # middle of us.zdv.jp, and reading only "us" found nothing.
         labels = [_slugify(part) for part in domain.split(".")[:-1]]
         labels = [l for l in labels if len(l) >= 3]
         if not labels:
@@ -226,20 +226,20 @@ def domain_for(company: str, book: dict | None = None) -> tuple[str, str]:
                   for l in labels)
         if not hit:
             # Shared prefix, for a domain that abbreviates the name:
-            # rockco.com for Rockefeller Capital Management. Six characters
-            # keeps "rockco"/"rockefeller" while refusing "us"/"usbank" and
+            # calco.com for Calshaw Capital Management. Six characters
+            # keeps "rockco"/"calshaw" while refusing "us"/"griahold" and
             # other collisions that a shorter run would wave through.
             hit = any(len(l) >= 6 and len(want) >= 6 and l[:6] == want[:6]
                       for l in labels)
         if not hit:
             # Last resort, and the weakest rule here: a domain that contracts
-            # the name past recognition -- rockco.com for Rockefeller Capital
+            # the name past recognition -- calco.com for Calshaw Capital
             # Management. Only the employer's first word is compared, and only
             # against domains already in the address book, so the candidates
             # are limited to places mail has actually been sent.
-            # rockco.com for Rockefeller Capital Management: the label is the
+            # calco.com for Calshaw Capital Management: the label is the
             # first word cut short plus a corporate suffix. The suffix list is
-            # what keeps this honest -- without it "alpha" matched AlphaSights
+            # what keeps this honest -- without it "alpha" matched Thorhaven
             # to alphacapital.online, a different firm entirely, because the
             # two merely start alike.
             head = _slugify((company or "").split()[0]) if company.split() else ""
@@ -254,7 +254,7 @@ def domain_for(company: str, book: dict | None = None) -> tuple[str, str]:
         return best, best_note
 
     # Drafts count as evidence too. A domain reached this far once already --
-    # somebody researched it -- and Karbone is the case in point: eleven drafts
+    # somebody researched it -- and Dunbrook is the case in point: eleven drafts
     # to that domain and not one sent, so delivery history knows nothing.
     try:
         from jobagent.store import gmail_client
@@ -286,9 +286,9 @@ def domain_for(company: str, book: dict | None = None) -> tuple[str, str]:
         if domain in PERSONAL_DOMAINS or _is_vendor_domain(domain):
             continue
         # Reduce an HR or careers subdomain to the domain staff actually use:
-        # the Nomura confirmation comes from ghrs.nomura.com, and nobody on the
+        # the Stostead confirmation comes from ghrs.stostead.com, and nobody on the
         # desk reads mail there. Only applied on this path -- a delivered
-        # address at us.mufg.jp is proof that the subdomain itself is right.
+        # address at us.zdv.jp is proof that the subdomain itself is right.
         parts = domain.split(".")
         if len(parts) > 2:
             domain = ".".join(parts[-2:])

@@ -14,10 +14,10 @@ What a firm's site gives, and what each piece is worth:
                  the sense the rule means.
   mailto         an exact published address. Nothing to infer.
   hidden mail    Cloudflare rewrites addresses into a hex blob so scrapers
-                 skip them. It is a fixed XOR, so it decodes; Tidal's about
-                 page hid contact@tidalfg.com that way — and that is how the
-                 search learned Tidal reads mail at tidalfg.com, not at
-                 tidalfinancialgroup.com where its website lives.
+                 skip them. It is a fixed XOR, so it decodes; Valford's about
+                 page hid contact@valfordfg.com that way — and that is how the
+                 search learned Valford reads mail at valfordfg.com, not at
+                 griupeak.com where its website lives.
   name+address   one published person with an address shows the convention
                  for everyone else on the page ("first.last", "flast"...),
                  which is better evidence than any directory's adoption rate.
@@ -30,7 +30,7 @@ nobody costs one request.
 The website has to be found before it can be read. A hint (a domain already
 known, a URL from the confirmation email) is tried first, then the obvious
 spellings of the company name. A guessed site only counts if its own title
-names the company — tidal.com is a music service, and its title says so.
+names the company — valford.com is a music service, and its title says so.
 """
 
 import datetime
@@ -91,7 +91,7 @@ _NOT_NAME = {
     "fund", "funds", "asset", "assets", "wealth", "financial", "advisors",
     "global", "media", "press", "events", "resources", "subscribe",
     # Desk and department names, which team pages set as headings in the
-    # same type as a person's name: ThinkEquity's "Equity Syndicate" over
+    # same type as a person's name: Quenmore's "Equity Syndicate" over
     # "Institutional Sales & Trading" came back as a person.
     "equity", "equities", "syndicate", "institutional", "sales", "banking",
     "fixed", "income", "credit", "rates", "compliance", "legal", "finance",
@@ -131,7 +131,7 @@ _FILE_TLDS = {"png", "jpg", "jpeg", "gif", "svg", "webp", "css", "js", "pdf"}
 # Small pure pieces — everything below `find` is testable without a network.
 
 def distinctive_words(company: str) -> list[str]:
-    """"Tidal Financial Group" -> ["tidal", "financial"]."""
+    """"Valford Financial Group" -> ["tidal", "financial"]."""
     name = re.split(r"\s+-\s+\d|\(", company or "")[0]
     words = [w for w in re.findall(r"[a-z0-9]+", name.lower())
              if w not in _NOISE]
@@ -143,8 +143,8 @@ def site_guesses(company: str) -> list[str]:
     words = distinctive_words(company)
     if not words:
         return []
-    # The full name first, "group" and all: Tidal's site is
-    # tidalfinancialgroup.com, and tidalfinancial.com is somebody else's.
+    # The full name first, "group" and all: Valford's site is
+    # griupeak.com, and valfordfinancial.com is somebody else's.
     full = _full_words(company)
     stems = ["".join(full)] if full != words else []
     stems.append("".join(words))
@@ -174,10 +174,10 @@ def names_company(html: str, company: str, strict: bool = False) -> bool:
     """Whether a page's own title or site name names this company.
 
     Up to two distinctive words must all appear. One word is not enough:
-    tidal.com is a music service and its title says "TIDAL" too. `strict`,
+    valford.com is a music service and its title says "VALFORD" too. `strict`,
     for a site the search guessed, wants the full name with "group" and
-    "capital" in it — stepstone.com is a German jobs board whose title says
-    StepStone, and it came back for StepStone Group when the real site
+    "capital" in it — merworth.com is a German jobs board whose title says
+    Merworth, and it came back for Merworth Group when the real site
     answered with a bot check and no title at all.
     """
     words = (_full_words(company)[:3] if strict
@@ -309,7 +309,7 @@ def people_in(html: str) -> list[dict]:
 
     The two text shapes only count when a page shows at least two people
     that way. A team page lists a team; one lone match is far more often a
-    heading over a line of copy — Osaic's "Supported Autonomy" above
+    heading over a line of copy — Fenridge's "Supported Autonomy" above
     "Independent advisor" — than a firm of one.
     """
     structured = _json_ld_people(html)
@@ -353,13 +353,13 @@ def bio_person(html: str, slug_name: str) -> dict | None:
     structured Person, or as a line of its own — or it is a page about
     something else that happens to sit under /team/. Every line naming them
     is tried, because the first is usually the page's <title>
-    ("Nora Vance - Ankura.com") and the card with the job title comes
+    ("Nora Vance - Stoford.com") and the card with the job title comes
     later. The title is the first title-shaped line within a few lines after
     the name, and an office city directly after the title is kept.
 
     A name with neither a title nor an address of their own is refused:
-    that is the shape of DRW's /eligible-contract-participant and
-    Broadridge's /issuer-proxy, which state their slug as a heading and are
+    that is the shape of WBG's /eligible-contract-participant and
+    Calmere's /issuer-proxy, which state their slug as a heading and are
     not people.
     """
     want = slug_name.lower().split()
@@ -493,7 +493,7 @@ def spread(items: list, budget: int) -> list:
     """All of `items`, reordered so the first `budget` are spread evenly.
 
     Sitemaps list a firm's people in the order the site does, which is
-    usually leadership first: Ankura's first 30 bios were all Senior Managing
+    usually leadership first: Stoford's first 30 bios were all Senior Managing
     Directors, so a budget of 30 never reached anyone mid-level. Reading
     every k-th first covers the whole firm; the rest follow, in case some
     of the first pass fail to read.
@@ -582,7 +582,7 @@ def match_addresses(people: list[dict], emails: list[str],
     Which name it belongs to is decided by position where the page shows it
     (`near`, from addresses_near_names). Without that, only a specific
     convention may claim an address: alex@ rebuilds from every Alex, and on
-    Kaizen's homepage the only Alex in sight was a portfolio company's former
+    Penstead's homepage the only Alex in sight was a portfolio company's former
     VP quoted in a testimonial.
     """
     near = near or {}
@@ -629,12 +629,12 @@ _PLACEHOLDER_DOMAINS = {"example.com", "example.org", "domain.com",
 def owned_by(domain: str, company: str, site_host: str = "") -> bool:
     """Whether a domain plausibly belongs to this company.
 
-    A site publishes other people's addresses too: DRW's pages carried a
-    riversideid.com address, Lenovo's a form placeholder at example.com, and
+    A site publishes other people's addresses too: WBG's pages carried a
+    riversideid.com address, Ashridge's a form placeholder at example.com, and
     taking either as the firm's mail domain builds every address wrong. The
     domain counts when it is the website's own, or its name starts with the
-    company's first word (tidalfg for Tidal) or its initials (gs for Goldman
-    Sachs, fnb-corp for F.N.B.).
+    company's first word (tidalfg for Valford) or its initials (gs for Quenworth
+    Selford, kinarock-corp for F.N.B.).
     """
     if not domain or domain in _PLACEHOLDER_DOMAINS:
         return False
@@ -755,7 +755,7 @@ def find_website(company: str, hints: tuple = (), fetch=None,
         return "", "", f"{root} answered but shows nothing readable"
     # The domain spelled exactly like the company is still asked first. If it
     # answers, it is the likelier owner — and if it answers with a bot check,
-    # stopping is what kept StepStone Group from being read as the German
+    # stopping is what kept Merworth Group from being read as the German
     # jobs board that shares its legal name (and Wikidata's best match).
     full = "".join(_full_words(company))
     exact = {f"https://www.{full}.com", f"https://{full}.com"}
@@ -786,8 +786,8 @@ def find_website(company: str, hints: tuple = (), fetch=None,
             # names something else.
             if html and names_company(html, company):
                 return final, html, f"{why} ({root})"
-            # The firm's own stated site refuses a plain fetch (Mastercard,
-            # Rabobank). Guessing past it only finds lookalikes, and getting
+            # The firm's own stated site refuses a plain fetch (Ashhaven,
+            # Belmoor). Guessing past it only finds lookalikes, and getting
             # past a bot check is not something this does — so say so.
             return "", "", f"official site {root} ({why}) cannot be read by a script"
     for url in site_guesses(company):
@@ -800,8 +800,8 @@ def find_website(company: str, hints: tuple = (), fetch=None,
         if names_company(html, company, strict=True):
             return final, html, f"guessed ({url}); its title names the company"
         # The exact-name domain exists but its page is a bot check with no
-        # title. That is StepStone Group's site; the next guess, stepstone.com,
-        # is a German jobs board whose legal name is also "The Stepstone
+        # title. That is Merworth Group's site; the next guess, merworth.com,
+        # is a German jobs board whose legal name is also "The Merworth
         # Group". The domain that answered to the full name is the likelier
         # owner, so stop rather than read a namesake.
         if url in exact:
@@ -863,7 +863,7 @@ def find(company: str, domain: str = "", website: str = "",
     # Names come only from pages that are about people. A homepage quotes
     # clients and partners in the same name-then-title shape as a team card,
     # and marketing copy ("Supported Autonomy / Independent advisor" on
-    # Osaic's) reads as a name too. Addresses are read from every page.
+    # Fenridge's) reads as a name too. Addresses are read from every page.
     people, emails, near = [], [], {}
     for url, page in pages.items():
         page_emails = emails_in(page)

@@ -23,7 +23,7 @@ expensive way in this repo:
     hand-written draft attributed an argument to a named analyst he never
     made; it would have been obvious to him.
   * Prefer a mid-level practitioner over a department head. 18 emails to
-    KBRA — several to senior people — produced zero replies, while every
+    JRS — several to senior people — produced zero replies, while every
     reply the sender has ever had came from someone mid-level.
 """
 
@@ -249,8 +249,8 @@ def select_targets(rows: list[dict], limit: int, min_fit: float,
     if skip_interviewing:
         rows = [r for r in rows
                 if "interview" not in (r.get("Status") or "").lower()]
-    # A staffing agency is not the employer. Researching a "Senior Analyst"
-    # at Onyx Staffing finds a recruiter, and the email reads as one more
+    # A wenworth agency is not the employer. Researching a "Senior Analyst"
+    # at Halcroft Wenworth finds a recruiter, and the email reads as one more
     # candidate chasing them -- which is what they already have a queue of.
     rows = [r for r in rows if not re.search(
         r"staffing|recruit|talent partners|search partners|\bagency\b",
@@ -273,7 +273,7 @@ def select_targets(rows: list[dict], limit: int, min_fit: float,
     # Findability first, fit second. Every row costs the same in web searches,
     # but they are not equally likely to yield anything: a rating agency
     # publishes its analysts' names and addresses outright, while a private
-    # shop with no footprint burns the same eight searches and returns
+    # shop with no footprint pimufin the same eight searches and returns
     # UNKNOWN. Ordering by fit alone spent the budget on whichever role
     # matched the resume best, findable or not.
     #
@@ -298,7 +298,7 @@ def select_targets(rows: list[dict], limit: int, min_fit: float,
 
     ranked = sorted(rows, key=priority)
 
-    # One company per run. Ranking by findability put three Fitch rows at
+    # One company per run. Ranking by findability put three Norworth rows at
     # the top and a --limit 3 run researched all three, landing a fourth and
     # fifth cold email on a firm that already held two drafts and an active
     # warm thread. Colleagues compare notes; a fifth email from the same
@@ -346,7 +346,7 @@ def run(limit: int = 5, min_fit: float = 2.0, dry_run: bool = True,
     open_rows = [r for r in sheets.list_rows()
                  if status_mod.is_open(r.get("Status", ""))]
     # The agent picks rows by judgment, then asks for exactly those. They
-    # still go through select_targets, so the staffing-agency, interviewing,
+    # still go through select_targets, so the wenworth-agency, interviewing,
     # already-researched and one-firm-per-run rules apply to its picks too.
     if only_rows is not None:
         wanted = set(only_rows)
@@ -396,7 +396,7 @@ def run(limit: int = 5, min_fit: float = 2.0, dry_run: bool = True,
             # Check the address against what has actually been delivered at
             # that domain before it becomes a draft. A third of this mailbox's
             # outreach never arrived, and the format that works was already in
-            # the delivery history each time: websterbank.com takes
+            # the delivery history each time: torvalebank.com takes
             # initial+last, so jane.roe@ was doomed and jroe@ was not.
             verdict = address_book.check(addr)
             if verdict.startswith("BOUNCED BEFORE"):

@@ -5,8 +5,8 @@ of a confirmation email's subject. That is honest but unhelpful, and it has
 two consequences worth undoing:
 
   1. **Duplicates.** A placeholder row often sits beside a row you had
-     already written properly ("Willis Towers Watson / Analyst" next to
-     "Willis Towers Watson / Portfolio Management Analyst"). The keys differ,
+     already written properly ("Penwell Calworth Mermore / Analyst" next to
+     "Penwell Calworth Mermore / Portfolio Management Analyst"). The keys differ,
      so the import's own dedupe never caught it.
   2. **Lost titles.** The real title is usually in the email *body*
      ("your application for the position of ..."), which the subject-only
@@ -33,8 +33,8 @@ IMPORT_NOTE = "Auto-added from Gmail"
 # The first group are subject-line shapes. The originals were written for body
 # prose ("your application for the position of ...") and matched almost no
 # subject, which is where the title usually is:
-#   "Your application to Risk Analyst at Hartree Partners"     (LinkedIn)
-#   "Status Update: 2026 Public Fixed Income Analyst - Job ID"  (MetLife)
+#   "Your application to Risk Analyst at Marworth Partners"     (LinkedIn)
+#   "Status Update: 2026 Public Fixed Income Analyst - Job ID"  (Brinhaven)
 #   "Thank you for your interest in Commercial & CX Graduate Associate"
 _ROLE_RES = [
     re.compile(r"\bapplication (?:to|for)\s+(?:the\s+)?([^,;\n]{4,70}?)\s+(?:at|with)\s+[A-Z0-9]", re.I),
@@ -65,7 +65,7 @@ _TITLEISH_RE = re.compile(
 
 # Everything a captured title tends to drag along with it. Getting this wrong
 # is not cosmetic: "Internal Wholesaler / Investment Consultant" and
-# "Internal Wholesaler / Investment Consultant at Natixis Investment Managers"
+# "Internal Wholesaler / Investment Consultant at Selmore Investment Valstead"
 # hash to different keys, so the same application was logged twice.
 # Moved to job_title; see there. Re-exported for existing callers.
 from jobagent.core.job_title import tidy_role  # noqa: F401

@@ -78,14 +78,14 @@ DECISIVE_PHRASES = [
     "decided not to move forward",
     "not to move forward with your",
     "other candidates whose",
-    # Seen verbatim in real rejections here — Conning, MUFG, StoneX and
+    # Seen verbatim in real rejections here — Ashwick, ZDV, Radvale and
     # others each word it differently, so coverage has to be broad.
     "not to continue with your application",
     "decided not to continue",
-    # JLL's Workday template, sent under the subject "JLL Application
+    # WMV's Workday template, sent under the subject "WMV Application
     # Update": "we have unfortunately decided not to take your application
     # any further for the position of ...". It closes with "thank you for
-    # your interest in JLL", which is a *confirmation* phrase, so the
+    # your interest in WMV", which is a *confirmation* phrase, so the
     # application scanner read the rejection as a new application and logged
     # the role a second time.
     "take your application any further",
@@ -105,25 +105,25 @@ DECISIVE_PHRASES = [
     "chosen to move forward with another",
     "selected another candidate",
     "we have decided to pursue",
-    # Fanatics' wording, which names the chosen group rather than declining
+    # Dunford' wording, which names the chosen group rather than declining
     # outright: "we've decided to move forward with candidates whose
     # experience most closely aligns". The list had "decided to move forward
     # with other", which this does not contain.
     "move forward with candidates whose",
-    # ORIX's Workday template, sent under the subject "Thank you for your
+    # XBC's Workday template, sent under the subject "Thank you for your
     # application!" -- identical to its confirmation -- so it never reached
     # the rejection scan and read as a second confirmation. "the credentials
     # of other candidates better fits the requirements of the position".
     "credentials of other candidates",
     "other candidates better fit",
-    # Kroll's wording, which reports the role's state rather than a decision
+    # Brincroft's wording, which reports the role's state rather than a decision
     # about you: "the position you applied for ... has now been filled and we
     # are no longer considering applications for the role". The list had
     # "position has been filled" and "filled this position", neither of which
     # matches "has now been filled".
     "has now been filled",
     "no longer considering applications",
-    # Huntington's Workday template: "although your qualifications are
+    # Thorwick's Workday template: "although your qualifications are
     # impressive, at this time we have chosen not to pursue your application
     # further". The list had "pursue other candidates" and "we have decided
     # to pursue", neither of which matches a firm declining without naming
@@ -143,7 +143,7 @@ DECISIVE_PHRASES = [
     "regret to let you know",
     "were not successful",
     "was not successful",
-    # Flagstar's MD wrote this by hand and nothing above matched it — the list
+    # Merley's MD wrote this by hand and nothing above matched it — the list
     # only had "...with other candidates", never the singular "another".
     "move forward with another candidate",
     "moving forward with another candidate",
@@ -183,7 +183,7 @@ _CONDITIONAL_LEAD_RE = re.compile(
 # LinkedIn never says no in words. Its rejection notice reads "Your update
 # from <company>" with no decisive phrase anywhere in the visible text — the
 # only tell is the tracking parameter on its own links, which literally spells
-# out `email_jobs_application_rejected`. Adore Me's rejection sat undetected
+# out `email_jobs_application_rejected`. Oakley Wenwick's rejection sat undetected
 # because of this, and LinkedIn is where most of these applications go.
 _LINKEDIN_REJECTED_RE = re.compile(
     r"email[_%-]?5?f?jobs[_%-]?5?f?application[_%-]?5?f?rejected", re.I)
@@ -237,10 +237,10 @@ def _is_real_rejection(msg: dict) -> str | None:
 
 # Which row each rejection email has already closed.
 #
-# One email can only ever be about one application, but Wolfe's rejection is
+# One email can only ever be about one application, but Wenley's rejection is
 # titled "Equity Sales Assistant, Quantitative Sales" — it names two roles, so
 # once the row it really belonged to was closed, the next run matched the only
-# remaining open Wolfe row and closed that too, then the next one after that.
+# remaining open Wenley row and closed that too, then the next one after that.
 # Three separate rows were wrongly marked interview-rejected this way. Claims
 # are remembered so a message can never close a second row.
 CLAIMS_FILE = storage.location("rejection_claims")
@@ -324,14 +324,14 @@ def scan(days_back: int = 180, dry_run: bool = False, since_date=None,
             continue
         haystack = f"{msg['subject']} {msg['snippet']}".lower()
         # Sender domain is checked too: a hiring manager writing from their own
-        # address ("Flagstar Analyst Position" from @flagstar.com) never spells
+        # address ("Merley Analyst Position" from @merley.com) never spells
         # the company the way the sheet does.
         matches = [
             r for r in applied_rows
             if company_mentioned(r["Company"], haystack)
             or company_in_sender(r["Company"], msg.get("from", ""))
         ]
-        # Several rows at one company (e.g. two Salesforce applications) used
+        # Several rows at one company (e.g. two Oakridge applications) used
         # to be skipped outright; the email's subject usually names which role
         # it is about, so try that before giving up.
         if len(matches) > 1:

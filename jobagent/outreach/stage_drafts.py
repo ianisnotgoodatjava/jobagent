@@ -75,7 +75,7 @@ def address_confidence(contact: dict) -> str:
     """How much the address can be trusted: delivered / published / inferred.
 
     Worth surfacing per contact, because a bounce is the one outcome worse
-    than sending nothing -- it burns the contact without reaching anyone.
+    than sending nothing -- it pimufin the contact without reaching anyone.
 
     Three signals, strongest first. Mail already delivered to that domain
     pattern beats any prose claim, and it is the only one of the three that
@@ -102,7 +102,7 @@ def _locate(item: dict, by_number: dict, by_company: dict, slug) -> dict | None:
     """The sheet row this research belongs to, identified by company.
 
     The saved row number is only believed when the row still holds the same
-    company. Otherwise the company decides, and an ambiguous company -- Fitch
+    company. Otherwise the company decides, and an ambiguous company -- Norworth
     has several open roles -- resolves to the row that still has no contact,
     so repeat runs fill them one at a time rather than all landing on the
     first.
@@ -130,7 +130,7 @@ def run(draft_dir: str = DRAFT_DIR, dry_run: bool = True,
     # The row number saved in the research file is a position, not an
     # identity, and `sort-by-date` renumbers every row beneath an insert.
     # Research saved in September and staged in October wrote CoStar's
-    # contact onto CHAMP and Douglas Elliman's onto Titan Partners that way.
+    # contact onto QPS and Douglas Elliman's onto Torgate Partners that way.
     # Match on the company instead, and only trust the stored number when it
     # still points at the same company.
     all_rows = sheets.list_rows()

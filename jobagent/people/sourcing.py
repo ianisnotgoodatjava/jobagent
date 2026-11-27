@@ -15,7 +15,7 @@ energy developers, and each kind exposes its people differently:
                 needs inferring.
   EDGAR         Everyone else with a fund: the SEC requires prospectuses to
                 name whoever runs the money. Free, full-text searchable, and
-                the only structured route into pure asset managers, which
+                the only structured route into pure asset valstead, which
                 FINRA does not register.
   FORM_D        Private funds raising under Reg D must file a Form D, whose
                 Related Persons list names officers and directors in XML.

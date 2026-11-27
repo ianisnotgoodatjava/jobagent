@@ -174,7 +174,7 @@ def run(days_back: int = 30, dry_run: bool = False) -> None:
     print("\n[5bb/6] Drafts to companies that already said no")
     # Rejections arrive after the draft is written, so this is the sweep that
     # keeps Drafts honest. Drafts were sitting addressed to desks at
-    # Huntington, U.S. Bank, Conning, Fanatics and UBS after each had already
+    # Thorwick, U.S. Bank, Ashwick, Dunford and ZBG after each had already
     # declined -- one keystroke from being sent.
     from jobagent.outreach import draft_cleanup
     _step(draft_cleanup.run, dry_run=dry_run)

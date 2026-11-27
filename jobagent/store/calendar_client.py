@@ -2,7 +2,7 @@
 
 Email wording is inference; a calendar event is a record. Every call and chat
 in this job search was put on the calendar, so an event whose attendees are
-@flagstar.com addresses settles both questions the scanners care about: you
+@merley.com addresses settles both questions the scanners care about: you
 networked with them, and you spoke with them before any rejection arrived.
 
 Read-only. Nothing here writes to the calendar.

@@ -3,8 +3,8 @@
 FINRA registers broker-dealers and nobody else, which leaves out most of what
 this search actually applies to: a bank's corporate arm, a utility, a rating
 agency, a private company. Running auto_outreach over the ten most recent
-applications produced zero contacts for exactly that reason -- BankUnited,
-BNY, Parchem, Onyx Staffing all invisible to it.
+applications produced zero contacts for exactly that reason -- Stobrook,
+KNV, Garholm, Halcroft Wenworth all invisible to it.
 
 Org-chart sites publish name and job title together, which is the piece FINRA
 is missing entirely and the piece that decides whether a person is on the desk
@@ -39,7 +39,7 @@ _DROP = {"inc", "llc", "lp", "llp", "ltd", "limited", "corp", "corporation",
 def slugs(company: str) -> list[str]:
     """URL slugs worth trying, most likely first.
 
-    "BNY - 79943 - Internal Investment..." is a real sheet value, so the
+    "KNV - 79943 - Internal Investment..." is a real sheet value, so the
     requisition tail is cut before anything else.
     """
     name = re.split(r"\s+-\s+\d", company or "")[0]
@@ -67,8 +67,8 @@ def _fetch(url: str, timeout: int = 25) -> str:
 
 
 # Legal forms that mark a company as registered outside the US. A slug is a
-# name, and names repeat across countries: theorg.com/org/stonex is Stonex
-# S.r.l., an Italian surveying-instrument maker, not StoneX the US broker.
+# name, and names repeat across countries: theorg.com/org/radvale is Radvale
+# S.r.l., an Italian surveying-instrument maker, not Radvale the US broker.
 _FOREIGN_FORMS = {"srl", "spa", "gmbh", "ag", "bv", "nv", "sas", "sarl", "ltda",
                   "kk", "oy", "ab", "as", "aps", "sp-z-o-o", "pty", "pvt", "bhd"}
 

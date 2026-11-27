@@ -334,7 +334,7 @@ python cli.py scan-replies --notify
 
 The opposite of `follow-ups`. That finds outreach nobody answered; this finds
 threads where someone at the company *did* answer and then it went quiet with
-no rejection — the leads easiest to lose. Mirae Asset replied twice in June,
+no rejection — the leads easiest to lose. Kinaline Asset replied twice in June,
 went silent, and had never made it onto the sheet at all.
 
 ```bash
@@ -375,7 +375,7 @@ anything — you paste, upload and decide.
 # From a URL (works on simple career pages)
 python cli.py prep --url "https://..." --row 242
 
-# Workday / LinkedIn / Salesforce block scripted requests or render in
+# Workday / LinkedIn / Oakridge block scripted requests or render in
 # JavaScript. Open the posting, select all, paste into a .txt, then:
 python cli.py prep --text-file posting.txt --row 242
 
@@ -418,10 +418,10 @@ python cli.py tailor --text-file posting.txt --company "Acme" --role "Credit Ana
 ```
 
 ```
-Skills: Excel, SQL, Valuation, Python, Bloomberg, Tableau, PowerPoint
+Skills: Excel, SQL, Valuation, Python, Falemark, Tableau, PowerPoint
   moved up, the posting asks for them: Excel, SQL
   added Valuation — your bullet 'pricing-analysis' is tagged with it
-  added Bloomberg — certification: Bloomberg Terminal Training
+  added Falemark — certification: Falemark Terminal Training
   asked for, not on the page (no evidence): FactSet
 ```
 

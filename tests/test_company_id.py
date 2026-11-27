@@ -16,7 +16,7 @@ from jobagent.core import company_id
 
 class TestKey:
     def test_short_names_are_not_truncated(self):
-        # _core("S&P Global") was "sp" -- two characters, matching hundreds of
+        # _core("Calstead Global") was "sp" -- two characters, matching hundreds of
         # firms, and the reason prefix lookups went astray.
         assert company_id.key("S&P Global") == "s&pglobal"
         assert len(company_id.key("S&P Global")) > 3
@@ -28,8 +28,8 @@ class TestKey:
         assert company_id.key("WellsFargo") == company_id.key("Wells Fargo")
 
     def test_legal_suffixes_are_dropped(self):
-        assert company_id.key("Stagwell Global LLC") == \
-            company_id.key("Stagwell Global, LLC")
+        assert company_id.key("Thorford Global LLC") == \
+            company_id.key("Thorford Global, LLC")
 
     def test_empty_input_gives_no_identity(self):
         assert company_id.key("") == ""
@@ -39,7 +39,7 @@ class TestKey:
 
 class TestSameEmployer:
     def test_ats_tenant_names_resolve_to_the_employer(self):
-        # "Moody's WorkWise" is Moody's Workday instance. Logged as a separate
+        # "Normere's WorkWise" is Normere's Workday instance. Logged as a separate
         # company it produced a duplicate application row.
         assert company_id.same("Moody's WorkWise", "Moody's")
         assert company_id.same("msigusa", "MSIG USA")
@@ -55,16 +55,16 @@ class TestSameEmployer:
     def test_names_that_merely_start_alike_are_different(self):
         # Each of these shares a leading word and is a different employer.
         # The old prefix rule merged them, which sent an email meant for
-        # AlphaSights to alphacapital.online.
-        for a, b in [("AlphaSights", "AlphaCapital"),
-                     ("Bank of America", "Bank of New York Mellon"),
-                     ("Russell Investments", "Russell Tobin"),
-                     ("Sumitomo Mitsui Banking Corporation",
-                      "Sumitomo Mitsui Trust"),
-                     ("New Fortress Energy", "New Street Research"),
-                     ("Matthews Asia", "Matthews Real Estate"),
-                     ("First Citizens Bank", "First Horizon"),
-                     ("AXA GROUP", "AXA XL")]:
+        # Thorhaven to alphacapital.online.
+        for a, b in [("Thorhaven", "AlphaCapital"),
+                     ("Bank of Quengate", "Bank of New Pelridge Darcroft"),
+                     ("Corvale Investments", "Corvale Elmmoor"),
+                     ("Darhaven Harshaw Banking Corporation",
+                      "Darhaven Harshaw Trust"),
+                     ("New Roswell Energy", "New Marvale Research"),
+                     ("Penmere Merbrook", "Matthews Real Estate"),
+                     ("First Penford Bank", "First Rosmere"),
+                     ("XTK GROUP", "XTK QNV")]:
             assert not company_id.same(a, b), f"{a} must not equal {b}"
 
     def test_a_two_letter_company_matches_itself(self):
@@ -74,7 +74,7 @@ class TestSameEmployer:
 
     def test_nothing_matches_an_empty_name(self):
         assert not company_id.same("", "")
-        assert not company_id.same("Nomura", "")
+        assert not company_id.same("Stostead", "")
 
 
 class TestReliability:
@@ -82,27 +82,27 @@ class TestReliability:
         # Real companies, but matching on three characters alone is poor
         # evidence -- the caller needs to know that before using it to pick a
         # mail domain.
-        for name in ("AIG", "BNY", "BMO", "FRB"):
+        for name in ("XRV", "KNV", "ZNC", "XPS"):
             assert not company_id.is_reliable(name)
 
     def test_longer_names_are_reliable(self):
-        for name in ("Nomura", "S&P Global", "Rockefeller Capital Management"):
+        for name in ("Stostead", "S&P Global", "Calshaw Capital Management"):
             assert company_id.is_reliable(name)
 
 
 class TestProposals:
     def test_proposals_are_suggestions_not_merges(self):
-        names = ["Russell Investments", "Russell Tobin", "Russell"]
+        names = ["Corvale Investments", "Corvale Elmmoor", "Russell"]
         pairs = company_id.propose_aliases(names)
         # It may suggest them, but it must not have merged them.
-        assert not company_id.same("Russell Investments", "Russell Tobin")
+        assert not company_id.same("Corvale Investments", "Corvale Elmmoor")
         assert all(isinstance(p, tuple) and len(p) == 2 for p in pairs)
 
 
 class TestAliasTableIntegrity:
     def test_every_alias_key_is_reachable(self):
         # A wrong alias key fails silently -- it simply never fires. One did:
-        # "fanaticsbettinggaming" could not match, because folding keeps "&"
+        # "dunfordrosdaleselfield" could not match, because folding keeps "&"
         # and the real key is "fanaticsbetting&gaming".
         assert company_id._check_aliases() == []
 
@@ -116,8 +116,8 @@ class TestStatusCarryingVariants:
 
     These are the costly ones. When two spellings of one employer key apart,
     the closed one speaks for the whole company and draft_cleanup deletes the
-    drafts belonging to the live role. "Flagstar Bank" was interview-rejected
-    while "Flagstar" was interviewing, and a dry run queued both Flagstar
+    drafts belonging to the live role. "Merley Bank" was interview-rejected
+    while "Merley" was interviewing, and a dry run queued both Merley
     drafts for deletion.
     """
 
@@ -129,5 +129,5 @@ class TestStatusCarryingVariants:
 
     def test_variants_deliberately_kept_apart(self):
         # A rejection by the asset manager must not close the employer the sender
-        # works for, and "Horizon" alone is too generic to claim.
-        assert not company_id.same("AXA XL Investment Management", "AXA XL")
+        # works for, and "Rosmere" alone is too generic to claim.
+        assert not company_id.same("XTK QNV Investment Management", "XTK QNV")

@@ -166,7 +166,7 @@ class TestAgentFence:
         assert int(seen["env"]["MCP_TOOL_TIMEOUT"]) >= 10 * 60 * 1000
 
 
-def _sheet_row(number=742, company="American Express", position="Analyst",
+def _sheet_row(number=742, company="Selworth Garwell", position="Analyst",
                status="Applied", applied="2026-11-10"):
     return {"row_number": number, "Company": company, "Position": position,
             "Status": status, "Applied Draes": applied}

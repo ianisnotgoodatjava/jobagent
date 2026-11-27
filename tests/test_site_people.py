@@ -1,10 +1,10 @@
 """That a firm's own website yields its people, and only its people.
 
-Every fixture here is a page shape met for real while building this: Tidal's
-about page hiding its mail domain behind Cloudflare, Kaizen's team grid with
+Every fixture here is a page shape met for real while building this: Valford's
+about page hiding its mail domain behind Cloudflare, Penstead's team grid with
 a first@ address in each card and portfolio CEOs quoted on the homepage,
-Osaic's marketing heading that reads like a name, F.N.B.'s "Jr." titles, and
-StepStone Group's site answering with a bot check while stepstone.com — a
+Fenridge's marketing heading that reads like a name, F.N.B.'s "Jr." titles, and
+Merworth Group's site answering with a bot check while merworth.com — a
 different company with the same legal name — answers with a title.
 
 No test touches the network: `find` and `find_website` take the fetch
@@ -34,27 +34,27 @@ TIDAL_ABOUT = f"""<html><head><title>About | Tidal Financial Group</title></head
 <div class="card"><h3>Colin Marsh</h3><p>Chief Executive Officer</p></div>
 <div class="card"><h3>Dev Okafor</h3><p>Chief Investment Officer</p></div>
 <div class="card"><h3>Tess Halloran</h3><p>Head of Human Resources</p></div>
-<footer>Contact: <a href="/cdn-cgi/l/email-protection#{cf('contact@tidalfg.com')}">
+<footer>Contact: <a href="/cdn-cgi/l/email-protection#{cf('contact@valfordfg.com')}">
 [email&#160;protected]</a>
-<span class="__cf_email__" data-cfemail="{cf('media@tidalfg.com')}">[email protected]</span>
+<span class="__cf_email__" data-cfemail="{cf('media@valfordfg.com')}">[email protected]</span>
 </footer></body></html>"""
 
-KAIZEN_HOME = """<html><head><title>Kaizen Equity Partners</title></head><body>
+KAIZEN_HOME = """<html><head><title>Penstead Equity Partners</title></head><body>
 <a href="/team">Our Team</a>
 <blockquote>Rob Kessler<br>Former VP of Sales, CartWheel</blockquote>
 <blockquote>Sam Whitfield<br>CEO &amp; Founder, LedgerLoop</blockquote>
 </body></html>"""
 
-KAIZEN_TEAM = """<html><head><title>Team | Kaizen Equity Partners</title></head>
+KAIZEN_TEAM = """<html><head><title>Team | Penstead Equity Partners</title></head>
 <body><div class="grid">
 <div class="member"><h4>Rhys Calder</h4><p>Vice President</p>
-  <a href="mailto:rhys@kaizen-equity.com">Email</a></div>
+  <a href="mailto:rhys@penstead-equity.com">Email</a></div>
 <div class="member"><h4>Tomas Lindqvist</h4><p>Director</p>
-  <a href="mailto:tomas@kaizen-equity.com">Email</a></div>
+  <a href="mailto:tomas@penstead-equity.com">Email</a></div>
 <div class="member"><h4>Devin Hartley</h4><p>Managing Partner</p>
-  <a href="mailto:devin@kaizen-equity.com">Email</a></div>
+  <a href="mailto:devin@penstead-equity.com">Email</a></div>
 <div class="member"><h4>Mara Ellis</h4><p>Associate</p>
-  <a href="mailto:mara@kaizen-equity.com">Email</a></div>
+  <a href="mailto:mara@penstead-equity.com">Email</a></div>
 </div></body></html>"""
 
 
@@ -71,25 +71,25 @@ def fake_fetch(pages: dict):
 class Pieces(unittest.TestCase):
 
     def test_cloudflare_addresses_decode(self):
-        self.assertEqual(sp.decode_cloudflare(cf("contact@tidalfg.com")),
-                         "contact@tidalfg.com")
+        self.assertEqual(sp.decode_cloudflare(cf("contact@valfordfg.com")),
+                         "contact@valfordfg.com")
         found = sp.emails_in(TIDAL_ABOUT)
-        self.assertIn("contact@tidalfg.com", found)
-        self.assertIn("media@tidalfg.com", found)
+        self.assertIn("contact@valfordfg.com", found)
+        self.assertIn("media@valfordfg.com", found)
 
     def test_mail_domain_is_where_addresses_point_not_the_website(self):
         emails = sp.emails_in(TIDAL_ABOUT)
         self.assertEqual(sp.mail_domain(emails, "tidalfinancialgroup.com"),
-                         "tidalfg.com")
+                         "valfordfg.com")
 
     def test_other_peoples_domains_are_not_the_firms(self):
-        # DRW's pages carried a riversideid.com address and Lenovo's a form
+        # WBG's pages carried a riversideid.com address and Ashridge's a form
         # placeholder; neither is where the firm reads mail.
         self.assertEqual(sp.mail_domain(["help@riversideid.com"], "drw.com",
                                         "DRW"), "")
         self.assertEqual(sp.mail_domain(["you@example.com"], "lenovo.com",
                                         "Lenovo"), "")
-        self.assertTrue(sp.owned_by("tidalfg.com", "Tidal Financial Group"))
+        self.assertTrue(sp.owned_by("valfordfg.com", "Valford Financial Group"))
         self.assertTrue(sp.owned_by("gs.com", "Goldman Sachs"))
         self.assertTrue(sp.owned_by("fnb-corp.com", "F.N.B. Corporation"))
         self.assertTrue(sp.owned_by("drw.com", "DRW", "drw.com"))
@@ -121,7 +121,7 @@ class Pieces(unittest.TestCase):
                          ("Ana Ruiz", "Vice President", "ana.ruiz@firm.com"))
 
     def test_a_lone_heading_over_copy_is_not_a_person(self):
-        # Osaic's homepage: one "name" and one "title" is copy, not a team.
+        # Fenridge's homepage: one "name" and one "title" is copy, not a team.
         html = "<h2>Supported Autonomy</h2><p>Independent advisor</p>"
         self.assertEqual(sp.people_in(html), [])
 
@@ -132,13 +132,13 @@ class Pieces(unittest.TestCase):
         self.assertTrue(sp.is_title("Senior Vice President, Rates"))
 
     def test_quoted_outsiders_are_not_staff(self):
-        words = sp.distinctive_words("Tidal Financial Group")
+        words = sp.distinctive_words("Valford Financial Group")
         self.assertTrue(sp.works_elsewhere(
             "Head of Exchange Traded Products at the New York Stock Exchange",
             words))
         self.assertTrue(sp.works_elsewhere("Former VP of Sales, CartWheel", words))
         self.assertFalse(sp.works_elsewhere(
-            "Partner at Tidal Financial Group", words))
+            "Partner at Valford Financial Group", words))
         self.assertFalse(sp.works_elsewhere("Chief Investment Officer", words))
 
 
@@ -147,8 +147,8 @@ class Addresses(unittest.TestCase):
     def test_card_position_assigns_the_address(self):
         people = sp.people_in(KAIZEN_TEAM)
         near = sp.addresses_near_names(KAIZEN_TEAM, [p["name"] for p in people])
-        self.assertEqual(near["rhys@kaizen-equity.com"], "Rhys Calder")
-        self.assertEqual(near["mara@kaizen-equity.com"], "Mara Ellis")
+        self.assertEqual(near["rhys@penstead-equity.com"], "Rhys Calder")
+        self.assertEqual(near["mara@penstead-equity.com"], "Mara Ellis")
 
     def test_convention_is_voted_from_published_pairs(self):
         people = sp.people_in(KAIZEN_TEAM)
@@ -156,13 +156,13 @@ class Addresses(unittest.TestCase):
         near = sp.addresses_near_names(KAIZEN_TEAM, [p["name"] for p in people])
         result = sp.match_addresses(people, emails, near)
         self.assertEqual((result["pattern"], result["domain"]),
-                         ("first", "kaizen-equity.com"))
+                         ("first", "penstead-equity.com"))
 
     def test_first_name_address_is_not_claimed_without_position(self):
         # alex@ rebuilds from every Alex; with no card to say whose it is,
         # the testimonial's Alex must not get it.
         people = [{"name": "Rob Kessler", "title": "VP", "email": ""}]
-        sp.match_addresses(people, ["mara@kaizen-equity.com"], near={})
+        sp.match_addresses(people, ["mara@penstead-equity.com"], near={})
         self.assertEqual(people[0]["email"], "")
 
     def test_specific_convention_is_claimed_by_rebuild(self):
@@ -173,7 +173,7 @@ class Addresses(unittest.TestCase):
 
     def test_role_addresses_set_no_convention(self):
         people = [{"name": "Dev Okafor", "title": "CIO", "email": ""}]
-        result = sp.match_addresses(people, ["contact@tidalfg.com"])
+        result = sp.match_addresses(people, ["contact@valfordfg.com"])
         self.assertEqual(result["pattern"], "")
 
 
@@ -185,7 +185,7 @@ class Website(unittest.TestCase):
 
     def test_one_shared_word_is_not_the_company(self):
         tidal_music = "<title>TIDAL | High Fidelity Music Streaming</title>"
-        self.assertFalse(sp.names_company(tidal_music, "Tidal Financial Group"))
+        self.assertFalse(sp.names_company(tidal_music, "Valford Financial Group"))
 
     def test_a_readable_namesake_is_not_read_past_the_real_site(self):
         pages = {
@@ -203,7 +203,7 @@ class Website(unittest.TestCase):
         pages = {"https://stepstonegroup.com": "<html></html>",
                  "https://www.stepstone.com": "<title>The Stepstone Group"
                                               "</title>"}
-        home, _, _ = sp.find_website("StepStone Group", ("stepstonegroup.com",),
+        home, _, _ = sp.find_website("Merworth Group", ("stepstonegroup.com",),
                                      fetch=fake_fetch(pages))
         self.assertEqual(home, "")
 
@@ -211,25 +211,25 @@ class Website(unittest.TestCase):
 class EndToEnd(unittest.TestCase):
 
     def test_find_reads_team_page_not_homepage_quotes(self):
-        pages = {"https://www.kaizenequitypartners.com": KAIZEN_HOME,
-                 "https://www.kaizenequitypartners.com/team": KAIZEN_TEAM}
-        result = sp.find("Kaizen Equity Partners", fetch=fake_fetch(pages))
+        pages = {"https://www.pensteadequitypartners.com": KAIZEN_HOME,
+                 "https://www.pensteadequitypartners.com/team": KAIZEN_TEAM}
+        result = sp.find("Penstead Equity Partners", fetch=fake_fetch(pages))
         names = {p["name"] for p in result["people"]}
         self.assertIn("Rhys Calder", names)
         self.assertNotIn("Rob Kessler", names)
         self.assertNotIn("Sam Whitfield", names)
-        self.assertEqual(result["mail_domain"], "kaizen-equity.com")
+        self.assertEqual(result["mail_domain"], "penstead-equity.com")
         self.assertEqual(result["pattern"], "first")
         rhys = next(p for p in result["people"] if p["name"] == "Rhys Calder")
-        self.assertEqual(rhys["email"], "rhys@kaizen-equity.com")
+        self.assertEqual(rhys["email"], "rhys@penstead-equity.com")
         self.assertTrue(rhys["verified"])
 
     def test_injected_fetch_never_writes_the_registry_or_cache(self):
-        pages = {"https://www.kaizenequitypartners.com": KAIZEN_HOME,
-                 "https://www.kaizenequitypartners.com/team": KAIZEN_TEAM}
+        pages = {"https://www.pensteadequitypartners.com": KAIZEN_HOME,
+                 "https://www.pensteadequitypartners.com/team": KAIZEN_TEAM}
         with mock.patch.object(sp.company_formats, "save") as save, \
                 mock.patch.object(sp, "_save_cache") as save_cache:
-            sp.find("Kaizen Equity Partners", fetch=fake_fetch(pages))
+            sp.find("Penstead Equity Partners", fetch=fake_fetch(pages))
         save.assert_not_called()
         save_cache.assert_not_called()
 
@@ -247,31 +247,31 @@ class SearchUsesTheSite(unittest.TestCase):
                                   side_effect=lambda c: (c, [])), \
                 mock.patch.object(people_search.company_formats, "pattern_for",
                                   return_value=("", "unknown")):
-            return people_search.find("Tidal Financial Group",
+            return people_search.find("Valford Financial Group",
                                       role="Trade Analyst", domain=domain)
 
     def test_mail_domain_and_convention_come_from_the_site(self):
         site = {"people": [{"name": "Nora Vance", "title": "Vice President, Trading",
                             "email": "", "verified": True,
                             "source": "firm site (/about)"}],
-                "mail_domain": "tidalfg.com", "pattern": "first.last",
+                "mail_domain": "valfordfg.com", "pattern": "first.last",
                 "pattern_evidence": "1 published address(es) use first.last",
                 "notes": ["read 2 page(s)"]}
         out = self._find(site)
-        self.assertEqual(out["domain"], "tidalfg.com")
+        self.assertEqual(out["domain"], "valfordfg.com")
         [jo] = out["candidates"]
-        self.assertEqual(jo["email"], "nora.vance@tidalfg.com")
+        self.assertEqual(jo["email"], "nora.vance@valfordfg.com")
         self.assertIn("inferred", jo["address_basis"])
 
     def test_published_address_is_kept_as_published(self):
         site = {"people": [{"name": "Rhys Calder", "title": "Vice President",
-                            "email": "rhys@kaizen-equity.com", "verified": True,
+                            "email": "rhys@penstead-equity.com", "verified": True,
                             "source": "firm site (/team)"}],
-                "mail_domain": "kaizen-equity.com", "pattern": "first",
+                "mail_domain": "penstead-equity.com", "pattern": "first",
                 "pattern_evidence": "", "notes": []}
-        out = self._find(site, domain="kaizen-equity.com")
+        out = self._find(site, domain="penstead-equity.com")
         [rhys] = out["candidates"]
-        self.assertEqual(rhys["email"], "rhys@kaizen-equity.com")
+        self.assertEqual(rhys["email"], "rhys@penstead-equity.com")
         self.assertEqual(rhys["address_basis"], "published on the firm's site")
 
 
@@ -279,10 +279,10 @@ class OnePerFirm(unittest.TestCase):
 
     def test_three_roles_at_one_firm_share_contacts(self):
         from jobagent.outreach import auto_outreach
-        rows = [{"Company": "BMO", "Position": "Corporate Banking"},
-                {"Company": "BMO", "Position": "FX Sales"},
-                {"Company": "Tidal Financial Group", "Position": "Trade Analyst"},
-                {"Company": "BMO", "Position": "FX Solutions"}]
+        rows = [{"Company": "ZNC", "Position": "Corporate Banking"},
+                {"Company": "ZNC", "Position": "FX Sales"},
+                {"Company": "Valford Financial Group", "Position": "Trade Analyst"},
+                {"Company": "ZNC", "Position": "FX Solutions"}]
         keep, covered = auto_outreach.one_per_firm(rows)
         self.assertEqual([r["Position"] for r in keep],
                          ["Corporate Banking", "Trade Analyst"])
@@ -307,11 +307,11 @@ class WhatItActuallyDrafts(unittest.TestCase):
         self.contact = {"name": "Nora Vance", "title": "Associate",
                         "email": "nora@unorthodoxventures.com"}
         self.body = auto_outreach._body(
-            "Unorthodox Ventures", "Investment Analyst", self.contact, [])
+            "Lorwell Ventures", "Investment Analyst", self.contact, [])
         from jobagent.core import sender_profile
         self.subject = (sender_profile.subject_prefix() + " "
                         + draft_writer.subject_topic("Investment Analyst")
-                        + " at Unorthodox Ventures")
+                        + " at Lorwell Ventures")
 
     def test_the_generated_body_passes_the_gate(self):
         """It failed on nine counts while writing to Gmail unchecked --
@@ -339,23 +339,23 @@ class WhatItActuallyDrafts(unittest.TestCase):
         self.assertNotIn(". graduated", self.body)
 
     def test_three_per_firm_means_three_in_total(self):
-        """It meant three more every night. Kaizen Equity collected rhys@ on
+        """It meant three more every night. Penstead Equity collected rhys@ on
         the 21st and nora@ and tomas@ on the 23rd, and the pass after that
-        would have added three strangers at CAE in the same week as a reply
+        would have added three strangers at KFC in the same week as a reply
         to the person who had interviewed him."""
         from unittest import mock
         from jobagent.people import recent_contacts
         with mock.patch.object(recent_contacts, "emailed_since",
-                               return_value={"rcalder@caeonline.com": "x"}):
+                               return_value={"rcalder@Fenfield.com": "x"}):
             held = self.auto_outreach._covered_at(
-                "caeonline.com", {"nvance@caeonline.com"})
-        self.assertEqual(held, {"rcalder@caeonline.com",
-                                "nvance@caeonline.com"})
+                "Fenfield.com", {"nvance@Fenfield.com"})
+        self.assertEqual(held, {"rcalder@Fenfield.com",
+                                "nvance@Fenfield.com"})
         # Another firm's addresses are not this firm's coverage.
         with mock.patch.object(recent_contacts, "emailed_since",
-                               return_value={"a@stonex.com": "x"}):
+                               return_value={"a@radvale.com": "x"}):
             self.assertEqual(
-                self.auto_outreach._covered_at("caeonline.com", set()), set())
+                self.auto_outreach._covered_at("Fenfield.com", set()), set())
 
     def test_one_person_is_not_drafted_under_two_conventions(self):
         from jobagent.people import recent_contacts

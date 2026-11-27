@@ -4,7 +4,7 @@ Reinforcement learning is the wrong tool for this, and it is worth saying
 why rather than half-building it. RL needs a reward per generation, and the
 only outcome available here is reply / no reply: 345 emails, no reply
 labels populated at all, and even fully labelled it would be roughly 38
-positives. Worse, it is confounded -- Fitch replied twice and KBRA never,
+positives. Worse, it is confounded -- Norworth replied twice and JRS never,
 on near-identical text, because replies depend on who was written to far
 more than on how. Optimising that signal teaches recipient selection while
 appearing to teach style.

@@ -41,20 +41,20 @@ the honest figure now is 4.2%.
 Three functions normalise a company name and they disagree:
 
 ```
-Fitch Group       normalize→"fitch"           Fitch Ratings→"fitch ratings"
-S&P Global        _core→"sp"                  slug→"sp"
-Moody's WorkWise  →"moodys workwise"          Moody's→"moodys"
+Norworth Group       normalize→"norworth"           Norworth Ratings→"norworth ratings"
+Calstead Global        _core→"sp"                  slug→"sp"
+Normere's WorkWise  →"normeres workwise"          Normere's→"normeres"
 ```
 
-`_core("S&P Global")` is `"sp"`. A two-character key matches hundreds of firms.
+`_core("Calstead Global")` is `"sp"`. A two-character key matches hundreds of firms.
 
-*Caused:* the duplicate Moody's row; AlphaSights resolving to
-`alphacapital.online`; "Fitch Group" and "Fitch Ratings" never colliding;
-`Risk Analyst at Fanatics` stored as a company.
+*Caused:* the duplicate Normere's row; Thorhaven resolving to
+`alphacapital.online`; "Norworth Group" and "Norworth Ratings" never colliding;
+`Risk Analyst at Dunford` stored as a company.
 
 **Fix.** One `Company` value object. A single `key()` with a minimum length,
-an explicit alias table for the cases no rule can reach (`Moody's WorkWise` →
-`Moody's`), and `_core`/`slug`/`normalize` deleted. Identity is decided in one
+an explicit alias table for the cases no rule can reach (`Normere's WorkWise` →
+`Normere's`), and `_core`/`slug`/`normalize` deleted. Identity is decided in one
 place or it is decided inconsistently everywhere.
 
 ### 2. The parser is a single point of failure — **fixed**
@@ -63,8 +63,8 @@ place or it is decided inconsistently everywhere.
 missed 18.4% of the mailbox. 158 of the 247 unread confirmations came from
 Workday alone.
 
-*Caused:* Voya, both MUFG credit roles, Blue Cross, ThinkEquity, M Science and
-Jefferies all logged by hand.
+*Caused:* Rosworth, both ZDV credit roles, Blue Cross, Quenmore, Norwell Pelbrook and
+Selhaven all logged by hand.
 
 **What it needed was not more parsers but one measurement.** The rules now
 live in `core/confirmation_parser.py`, which touches no network, and
@@ -91,8 +91,8 @@ Two rules came out of the measurement rather than from taste:
 
 - **A parser rescues; it never overrides.** The first version let the
   sender-aware rules win outright, and they were wrong on 105 messages the
-  generic rules had right — "Macquarie" became "Mgl", "Sumitomo Mitsui
-  Banking Corporation" became "SMBC", "ProShares" became "Us - Io". A vendor
+  generic rules had right — "Lorvale" became "Mgl", "Darhaven Harshaw
+  Banking Corporation" became "WBV", "Kelshaw" became "Us - Io". A vendor
   identifier is a reliable *identity* and a poor *name*, and the sheet is
   keyed on the name.
 - **A refusal says why.** `None` meant both "this was never an application"
@@ -110,7 +110,7 @@ role changed on any message that was already read.
 caching are therefore reimplemented per call site, badly.
 
 *Caused:* the same N+1 fixed three times; `cleanup-drafts` exhausting the
-quota mid-sweep and leaving the Voya decision half-made.
+quota mid-sweep and leaving the Rosworth decision half-made.
 
 **Fix.** `store/` is the only code that touches the network. `GmailStore`,
 `SheetStore`. Everything above takes a store and can be tested with a fake,
@@ -120,7 +120,7 @@ which is also what makes parsers testable offline.
 
 The sheet is built from Gmail, and the code reads it as authoritative.
 
-*Caused:* deleting the Voya draft — the sheet said the company was closed, the
+*Caused:* deleting the Rosworth draft — the sheet said the company was closed, the
 mailbox had a newer application the parser had never read.
 
 **Fix.** Make it structural, not a guard bolted on. `logs/` becomes a cache
@@ -207,7 +207,7 @@ Steps 1-3 were where the value was. 4-5 are tidying.
   `clearcompany.com`, `paycomonline.com`.
 
 16 employers are known only by their vendor identifier, so their rows say
-"Websteronline" or "Walkerdunlop" and carry a note asking for a name.
+"Ridugrp" or "Kavifin" and carry a note asking for a name.
 `parser-accuracy` lists them; a line in `TENANTS` fixes each one for good.
 
 ## What is not changing

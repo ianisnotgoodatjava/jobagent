@@ -40,7 +40,7 @@ def _addresses(header: str) -> list[tuple[str, str]]:
 
 
 # Display names that give away a system even when the address does not:
-# "Nomura HR SuccessFactors" writes from a perfectly human-looking address.
+# "Stostead HR SuccessFactors" writes from a perfectly human-looking address.
 _ROBOT_NAME_RE = re.compile(
     r"do.?not.?reply|no.?reply|workday|successfactors|taleo|icims|greenhouse|"
     r"talent acquisition|recruit(ing|ment)|human resources|\bhr\b|careers?|"

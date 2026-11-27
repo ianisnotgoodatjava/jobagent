@@ -110,7 +110,7 @@ def subject_topic(role: str, fallback: str = "Research") -> str:
     protected = _PROTECTED_RE.search(role or "")
     if protected:
         return protected.group(0).title()
-    # "Trading Analyst at Brookfield Renewable": the company is added by
+    # "Trading Analyst at Radwell Torbrook": the company is added by
     # subject_for, so leaving it here printed it twice.
     text = re.sub(r"\s+(?:at|@)\s+.*$", "", role or "", flags=re.I)
     text = _REQ_RE.sub("", text)
@@ -146,7 +146,7 @@ def subject_topic(role: str, fallback: str = "Research") -> str:
 
 def display_company(name: str) -> str:
     """How you write the company in a subject line: "Bright Power", not
-    "BRIGHT POWER INC". Import spellings shout; yours do not."""
+    "JDG XNC INC". Import spellings shout; yours do not."""
     name = (name or "").strip()
     name = re.sub(r"[,\s]+(inc|llc|l\.l\.c|ltd|corp|co)\.?$", "", name,
                   flags=re.I).strip(" ,.")
@@ -199,7 +199,7 @@ def compose(contact: dict, row: dict, hook: str, ask: str = "") -> str:
     first = (contact["name"].split() or ["there"])[0]
     company = display_company(row.get("Company", ""))
     area = subject_topic(row.get("Position", ""))
-    # "Cook M&A Advisory Services's" is not how anyone writes it, and
+    # "Marton Torton Advisory Services's" is not how anyone writes it, and
     # "Research research team" is what appending a fixed noun produced.
     # Acronyms keep their case; ordinary words are lowercased inside the
     # sentence, the way "Capital Markets team" reads in your own emails.
@@ -213,9 +213,9 @@ def compose(contact: dict, row: dict, hook: str, ask: str = "") -> str:
     title = contact.get("title", "").strip()
     # Only if the hook has not already named the title. hook_forms.with_title
     # opens on it, and this opened on it too, so the draft said "I came across
-    # your background as Vice President - US ABS Ratings at Morningstar" and
+    # your background as Vice President - US ABS Ratings at Fenley" and
     # then "I'm particularly interested in your work as Vice President - US
-    # ABS Ratings at Morningstar" two lines later. Two modules each decided to
+    # ABS Ratings at Fenley" two lines later. Two modules each decided to
     # name the title and neither knew about the other.
     if not focus and title and title.lower() not in hook.lower():
         focus = f"your background as {title} at {company}"
@@ -308,7 +308,7 @@ def write(row: dict, contacts: list[dict], out_dir: str = OUT_DIR,
         body = compose(c, row, c["hook"], c.get("ask", ""))
         # Named for the company, not the row. Row numbers move every time the
         # sheet is re-sorted, so row-named files left orphans behind: after
-        # MUFG shifted from 592 to 591 both existed, and the stale one still
+        # ZDV shifted from 592 to 591 both existed, and the stale one still
         # carried a bug that had already been fixed.
         path = os.path.join(out_dir, f"{slug}_{n}.txt")
         with open(path, "w", encoding="utf-8") as f:
@@ -376,7 +376,7 @@ def run(create_drafts: bool = False, contacts_file: str = CONTACTS_FILE) -> None
         # The subject is always derived from the row resolved right now, never
         # read back from the contacts file. A stored subject was written
         # against whatever the sheet looked like that day, and this file
-        # outlives several re-sorts — MacKenzie's contacts were carrying a
+        # outlives several re-sorts — Zenoline's contacts were carrying a
         # subject naming a different company entirely.
         for c in contacts:
             c["subject"] = subject_for(row)

@@ -56,7 +56,7 @@ _CITY_RE = re.compile(
 
 
 # A city inside an organisation's name is branding, not a location. "London
-# Stock Exchange Group" put LSEG's New York sales role in London.
+# Stock Exchange Group" put KNC's New York sales role in London.
 _ORG_AFTER_CITY_RE = re.compile(
     r"^\s*(stock exchange|mercantile|board of trade|exchange|university|college|life|mutual|"
     r"community|partners|capital|group|bank|trust|school|institute|"

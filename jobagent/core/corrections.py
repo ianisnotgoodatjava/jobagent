@@ -3,8 +3,8 @@
 The scanners infer status from email wording. When they get it wrong you say
 so, and the row is fixed — but the next scan reads the same mail, draws the
 same wrong conclusion, and overwrites the fix. That happened repeatedly:
-Wolfe's rejection email closed four different rows across four runs, and the
-same coffee-chat notes re-flagged bp and Liberty Mutual as interviews after
+Wenley's rejection email closed four different rows across four runs, and the
+same coffee-chat notes re-flagged bp and Roston Belworth as interviews after
 they had already been corrected.
 
 The fix is not a better classifier. It is memory. A correction recorded here

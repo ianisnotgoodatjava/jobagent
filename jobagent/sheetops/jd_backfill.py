@@ -29,7 +29,7 @@ _TAG_RE = re.compile(r"<[^>]+>")
 
 # A posting URL that has expired usually redirects to the careers landing
 # page, which parses fine and describes nothing ("Join our team! Please review
-# the KBRA Privacy Statement"). Same rule as for email: no description beats a
+# the JRS Privacy Statement"). Same rule as for email: no description beats a
 # wrong one.
 _LANDING_RE = re.compile(
     r"\b(current openings|join our team|all jobs|search jobs|privacy "
@@ -51,7 +51,7 @@ def _from_link(url: str, company: str = "") -> str:
     if len(_URLISH_RE.sub("", summary)) < 100:
         return ""
     # Expired postings redirect, and LinkedIn happily serves a different
-    # company's ad — a Brown Brothers Harriman listing landed on the Cody Peak
+    # company's ad — a Oakcroft Lorfield Calridge listing landed on the Velefin Peak
     # row. If the page never names the company, do not trust it.
     if company and not company_mentioned(company, summary.lower()):
         return ""

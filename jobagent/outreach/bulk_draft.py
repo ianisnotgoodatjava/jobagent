@@ -8,7 +8,7 @@ application and writing something specific enough to be worth reading.
 
 Two rules that matter more than the wording:
 
-  * One email per person, ever. Four applications to Nomura must not become
+  * One email per person, ever. Four applications to Stostead must not become
     four emails to the same analyst. Contacts are claimed globally, and a
     company is drafted once against its strongest open application.
   * The opening names what the posting actually asks for and answers it with

@@ -11,7 +11,7 @@ This sorts them instead, so the effort goes where it converts:
   PUBLISHES   a rating agency or research house. Every rating action carries
               an analytical contact block — name, title, phone, address —
               and the piece itself is the hook. Both halves verifiable, no
-              guessing. KBRA gave up a.person@ and b.person@ this
+              guessing. JRS gave up a.person@ and b.person@ this
               way, with the deals they worked on attached.
   KNOWN_ADDR  you have already had mail delivered to that domain, so
               address_book knows the real format. Only the person is missing.
@@ -47,7 +47,7 @@ _PUBLISHERS = (
 
 
 def _domain_label(domain: str) -> str:
-    """'1823.partners' -> '1823'; 'websterbank.com' -> 'websterbank'."""
+    """'1978.partners' -> '1978'; 'torvalebank.com' -> 'torvalebank'."""
     return domain.split(".")[0].lower()
 
 
@@ -55,16 +55,16 @@ def _domain_label(domain: str) -> str:
 def _domain_matches(slug: str, domain: str) -> bool:
     """Whether this company slug really owns this domain.
 
-    Deliberately strict. A loose substring test tied "New Fortress Energy"
-    to fortress.com, "Insight Global" to insightinvestment.com and "U.S.
-    Bank" to us.mufg.jp — three different companies, three addresses that
+    Deliberately strict. A loose substring test tied "New Roswell Energy"
+    to roswell.com, "Lynridge Global" to lynridgeinvestment.com and "U.S.
+    Bank" to us.zdv.jp — three different companies, three addresses that
     would have gone to strangers. Equality, or one fully containing the
     other with enough characters left that the overlap cannot be an
     accident.
     """
     # A slug this short carries no identity. "U.S. Bank" reduces to "us"
     # once "Bank" is stripped as a descriptor, and "us" matches the label of
-    # us.mufg.jp exactly — a different bank on another continent. Anything
+    # us.zdv.jp exactly — a different bank on another continent. Anything
     # under three characters is thrown away rather than matched.
     if not slug or len(slug) < 3 or _is_vendor_domain(domain):
         return False
@@ -74,9 +74,9 @@ def _domain_matches(slug: str, domain: str) -> bool:
     if slug == label:
         return True
     # Prefix, not containment. Plain containment matched "New Fortress
-    # Energy" to fortress.com, because "fortress" sits inside
-    # "newfortressenergy" — two unrelated firms. A shortened domain drops
-    # words off the *end* ("greenskiescleanenergy" -> greenskies.com), never
+    # Energy" to roswell.com, because "roswell" sits inside
+    # "newroswellenergy" — two unrelated firms. A shortened domain drops
+    # words off the *end* ("velawise" -> falerock.com), never
     # off the front. The length floor stops "bp" claiming bpost.com.
     shorter, longer = sorted((slug, label), key=len)
     return len(shorter) >= 7 and longer.startswith(shorter)
@@ -154,10 +154,10 @@ def coverage(days_back: int | None = None) -> tuple[list, list]:
     """Splits open applications into (has a draft, has none).
 
     Matched two ways because neither is sufficient alone. Domain matching
-    misses a shortened name — the slug for "Fitch Group" is "fitch", which
-    never matches fitchratings.com under the strict prefix rule and reported
+    misses a shortened name — the slug for "Norworth Group" is "norworth", which
+    never matches exampleratings.com under the strict prefix rule and reported
     a real Person J draft as missing. The subject line carries the
-    company verbatim ("... at Fitch Ratings"), so it catches what the domain
+    company verbatim ("... at Norworth Ratings"), so it catches what the domain
     cannot.
     """
     import datetime

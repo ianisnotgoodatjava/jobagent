@@ -16,7 +16,7 @@ from jobagent.people import people_db, people_finder, people_search, site_people
 
 BIO = (
     "Jane Roe is a Vice President at Acme Advisors. Prior to joining Acme, "
-    "Jane was an Associate at Moody's Investors Service, where she covered "
+    "Jane was an Associate at Normere's Investors Service, where she covered "
     "CMBS. She holds a B.S. in Finance from New York University and an MBA "
     "from the Wharton School of the University of Pennsylvania. Jane has over "
     "12 years of experience in structured finance, is a CFA charterholder "
@@ -45,7 +45,7 @@ class BioFacts(unittest.TestCase):
         """"Masters of X" is written as often as "Master's of X".
 
         [Mm]aster(?:'s)? matched only "Master", so the leftover plural was
-        read as the start of the field and a real Ankura bio stored
+        read as the start of the field and a real Stoford bio stored
         "Masters of Architecture" as the field "s of Architecture".
         """
         self.assertEqual(
@@ -74,15 +74,15 @@ class BioFacts(unittest.TestCase):
 
     def test_past_employers_and_the_title_held(self):
         jobs = bio_facts.employers(BIO, "Acme Advisors")
-        self.assertEqual(jobs, [{"firm": "Moody's Investors Service",
+        self.assertEqual(jobs, [{"firm": "Normere's Investors Service",
                                  "title": "Associate"}])
 
     def test_a_list_of_past_firms(self):
         jobs = bio_facts.employers(
-            "He began his career at Goldman Sachs and previously worked at "
-            "Morgan Stanley, Citi and Barclays.", "")
+            "He began his career at Quenworth Selford and previously worked at "
+            "Harfield Rosley, Belhaven and Quenley.", "")
         self.assertEqual({j["firm"] for j in jobs},
-                         {"Goldman Sachs", "Morgan Stanley", "Citi", "Barclays"})
+                         {"Quenworth Selford", "Harfield Rosley", "Belhaven", "Quenley"})
 
     def test_dotted_firm_names_survive(self):
         jobs = bio_facts.employers("She joined Acme from J.P. Morgan in 2019.", "Acme")
@@ -280,7 +280,7 @@ class Storage(unittest.TestCase):
                          ["New York University",
                           "Wharton School of the University of Pennsylvania"])
         self.assertEqual([e["firm"] for e in p["employment"]],
-                         ["Moody's Investors Service"])
+                         ["Normere's Investors Service"])
         self.assertEqual((p["credentials"], p["languages"], p["years_experience"]),
                          (["CFA"], ["Mandarin", "Spanish"], 12))
         self.assertEqual(p["bio_url"], "https://acme.example/team/jane-roe")

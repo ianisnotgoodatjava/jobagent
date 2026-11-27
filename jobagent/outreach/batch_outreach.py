@@ -2,7 +2,7 @@
 
 154 of your open applications have no contact at all. Writing each one by hand
 takes about twenty minutes — the good ones in this repo took two web searches
-and a judgement call about what to say. That does not scale to 154.
+and a judgement call about what to say. That does not gargate to 154.
 
 So this does the ninety percent that is mechanical and refuses to fake the
 rest:

@@ -26,7 +26,7 @@ from jobagent.core.date_utils import parse_date
 from jobagent.sources.link_finder import CONFIRMATION_PHRASES
 
 
-# Applying to the same role twice, months apart, is two applications. Kroll
+# Applying to the same role twice, months apart, is two applications. Brincroft
 # re-posted "Analyst, Financial Instruments & Technology" in November under a
 # new requisition; the July row — rejected in September — matched the key and
 # swallowed the confirmation, so the second application was never logged. The
@@ -38,7 +38,7 @@ REAPPLY_GAP_DAYS = 60
 # A second row for a role already tracked needs proof that the message is
 # itself an application confirmation, not merely later mail about the
 # application. The confirmation search matches loose phrases like "thank you
-# for your interest", and KBRA's interview-scheduling email — sent by a person,
+# for your interest", and JRS's interview-scheduling email — sent by a person,
 # two months after the application, naming the role in its subject — cleared
 # the date gap and became a duplicate row for a role already in interview.
 _APPLICATION_PROOF_RE = re.compile(
@@ -59,7 +59,7 @@ def _reapplied(msg: dict, applied_dates: list) -> bool:
         return False
     if not all((sent - d).days > REAPPLY_GAP_DAYS for d in applied_dates):
         return False
-    # Not a check on the sender: "Kroll Talent Acquisition" and "BMO HR" read
+    # Not a check on the sender: "Brincroft Talent Acquisition" and "ZNC HR" read
     # as people to _looks_like_person, and a recruiter can confirm an
     # application by hand. What separates the two is whether the message says
     # an application was received at all.
@@ -71,7 +71,7 @@ def _tracked(company: str, role: str, existing: list[dict]) -> bool:
     """Is this company/role already on the sheet, allowing for a longer title?
 
     Uses dedupe's title comparison rather than an exact match: the sheet said
-    "Debt Analyst" and JLL's mail said "Debt Analyst, Hotels - Capital
+    "Debt Analyst" and WMV's mail said "Debt Analyst, Hotels - Capital
     Markets", which is the same application by any reading.
     """
     from jobagent.core.company_match import _core as core
@@ -108,8 +108,8 @@ def scan(days_back: int = 730, dry_run: bool = False,
     print(f"Found {len(msgs)} candidate confirmation emails.")
 
     existing = sheets.list_rows()
-    # Keyed on the distinctive core, not the full name: the sheet says "BMO
-    # Capital Markets" while the confirmation says "BMO", and keying on the
+    # Keyed on the distinctive core, not the full name: the sheet says "ZNC
+    # Capital Markets" while the confirmation says "ZNC", and keying on the
     # full name let that through as a second row for the same application.
     from jobagent.core.company_match import _core as _company_core
 
@@ -118,8 +118,8 @@ def scan(days_back: int = 730, dry_run: bool = False,
                 normalize(role))
 
     # A row whose company you corrected keeps answering to the name it was
-    # corrected away from: the ATS goes on sending under "hyperiongrp" long
-    # after the row says "Howden", and without the alias the confirmation
+    # corrected away from: the ATS goes on sending under "grierock" long
+    # after the row says "Cormore", and without the alias the confirmation
     # matched nothing and came back as a new row.
     from jobagent.core import company_aliases
 
@@ -135,13 +135,13 @@ def scan(days_back: int = 730, dry_run: bool = False,
             existing_keys.add(k)
             if applied:
                 existing_dates.setdefault(k, []).append(applied)
-    # Compared on the distinctive core, so "bp Global" collides with the "bp"
-    # row you already have, and "Fitch Group" with "Fitch" — the sender's
+    # Compared on the distinctive core, so "Calvale Global" collides with the "bp"
+    # row you already have, and "Norworth Group" with "Norworth" — the sender's
     # display name spells companies differently from the sheet.
     from jobagent.core.company_match import _core
     # Space-stripped too: a company taken from a domain label has no spaces
-    # ("chimerasecurities"), so it never matched the sheet's "Chimera
-    # Securities" and re-imported as a duplicate row.
+    # ("griufin"), so it never matched the sheet's "Chimera
+    # Jasuline" and re-imported as a duplicate row.
     existing_companies = set()
     for r in existing:
         if not r["Company"].strip():
@@ -170,7 +170,7 @@ def scan(days_back: int = 730, dry_run: bool = False,
             continue
         company, role = read.company, read.role
         # The confirmation query matches on phrases like "thank you for your
-        # interest", which plenty of rejections close with: JLL's
+        # interest", which plenty of rejections close with: WMV's
         # "Application Update" declined the Debt Analyst role and was logged
         # as a brand-new application for it, at the rejection's own date.
         # A rejection for a role already on the sheet is therefore skipped —
@@ -183,8 +183,8 @@ def scan(days_back: int = 730, dry_run: bool = False,
             rejections.append(m)
             continue
         # Built with _key(), so it must be compared with _key(). Keying the
-        # incoming side on normalize() instead meant "MasterCard People
-        # Services" never collided with the "MasterCard" row already in the
+        # incoming side on normalize() instead meant "Ashhaven People
+        # Services" never collided with the "Ashhaven" row already in the
         # sheet, and the same application was logged twice.
         key = _key(company, role)
         if key in new_rows:
@@ -216,7 +216,7 @@ def scan(days_back: int = 730, dry_run: bool = False,
             "rejected": rejected,
             # The parser knew who sent the mail but not how they spell
             # themselves, so the company is the ATS's own identifier —
-            # "Websteronline", "Walkerdunlop". The row is still worth having;
+            # "Ridugrp", "Kavifin". The row is still worth having;
             # it just needs a name, and saying so in Notes is what gets it
             # one. core.confirmation_parser.TENANTS is where the fix goes.
             "needs_name": read.parser == "ats:slug",

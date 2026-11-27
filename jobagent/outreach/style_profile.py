@@ -334,7 +334,7 @@ def run(path: str = CORPUS) -> None:
 # actually good for.
 #
 # They are exemplars, never sources. Reusing their content is what produced a
-# KBRA draft that said "Fitch" and a management-trainee posting pitched on
+# JRS draft that said "Norworth" and a management-trainee posting pitched on
 # CMBS, so the instruction attached to them says so in as many words.
 
 # No example older than this is shown, however well it matches on topic. The

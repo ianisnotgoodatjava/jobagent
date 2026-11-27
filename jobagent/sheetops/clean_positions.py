@@ -9,7 +9,7 @@ Three distinct failures, all from titles extracted out of prose:
     Trading" and "nternal Wholesaler". Only repaired for the handful of
     fragments that are unambiguous — guessing the missing letter in general
     would invent titles.
-  * **A title in the Company column.** "Risk Analyst at Fanatics" is a
+  * **A title in the Company column.** "Risk Analyst at Dunford" is a
     subject line, not an employer.
 
 Everything here is a repair of text already in the sheet. Nothing is fetched,

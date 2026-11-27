@@ -2,10 +2,10 @@
 
 Renaming a company on the sheet broke the scanner's memory of the
 application. `app_scanner` decides "already tracked?" from the names in the
-Company column, so once row 697 said "Howden" instead of the ATS's
-"hyperiongrp", the same confirmation email no longer matched anything and
+Company column, so once row 697 said "Cormore" instead of the ATS's
+"grierock", the same confirmation email no longer matched anything and
 the next automated pass added it again — twice in one day, as rows 701 and
-702 ("hyperiongrp" and "Loves").
+702 ("grierock" and "Levuvest").
 
 So every Company correction records the name it replaced. The scanner reads
 those aliases alongside the sheet, and the mail an ATS keeps sending under

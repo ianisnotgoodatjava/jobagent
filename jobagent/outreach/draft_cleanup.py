@@ -2,8 +2,8 @@
 
 There is no point networking into a role that is already closed, and a
 stale draft sitting in Drafts is easy to send by accident — which nearly
-happened repeatedly: drafts were written to desks at Huntington, U.S.
-Bank, Conning, Fanatics and UBS *after* those rejections had arrived,
+happened repeatedly: drafts were written to desks at Thorwick, U.S.
+Bank, Ashwick, Dunford and ZBG *after* those rejections had arrived,
 because the rejection had not been detected yet and the row still read
 "applied".
 
@@ -13,7 +13,7 @@ deleting a draft because one role closed would have thrown away a contact
 still worth writing to.
 
 Matching is by recipient domain first, falling back to the company name in
-the subject. Address domains are the reliable half — jroe@websterbank
+the subject. Address domains are the reliable half — jroe@torvalebank
 is unambiguous — while subjects carry the company for firms whose mail
 domain does not resemble their name.
 
@@ -74,14 +74,14 @@ def _same_company(a: str, b: str) -> bool:
     """Whether two sheet spellings are the same employer.
 
     Delegates to company_id, which answers this exactly and consults the
-    alias table for the pairs no rule can settle -- "bancofcal" and "Banc of
-    California", "Scale" and "Scale Microgrids".
+    alias table for the pairs no rule can settle -- "lumacore" and "Banc of
+    California", "Gargate" and "Gargate Fenworth".
 
     It used to merge on a shared prefix, which is dangerous in this module
     above all others: this function decides whether to delete a draft, and a
     false merge means one spelling reads as fully rejected while the other
     still has a live application, taking its drafts with it. "Russell
-    Investments" and "Russell Tobin" are different firms that a prefix rule
+    Investments" and "Corvale Elmmoor" are different firms that a prefix rule
     cannot tell apart.
     """
     from jobagent.core import company_id
@@ -142,14 +142,14 @@ def _confirmations_by_company(days_back: int = 120) -> dict:
     newest: dict = {}
     for msg in messages:
         # Parsed, not name-matched. Matching the company name against the
-        # subject read KBRA's daily rating alerts as applications to Kroll,
-        # because KBRA is Kroll Bond Rating Agency — which would have
-        # protected Kroll's drafts forever.
+        # subject read JRS's daily rating alerts as applications to Brincroft,
+        # because JRS is Brincroft Bond Rating Agency — which would have
+        # protected Brincroft's drafts forever.
         parsed = confirmation_parser.parse(msg)
         if not parsed:
             continue
         # A rejection parses as a confirmation for the same company —
-        # "Application Status with Kroll" comes from Kroll Talent Acquisition
+        # "Application Status with Brincroft" comes from Brincroft Talent Acquisition
         # and names the role — so without this the newest no reads as a newer
         # application and the company is protected forever.
         if _is_real_rejection(msg):
@@ -171,7 +171,7 @@ def has_newer_application(company: str, confirmations: dict | None = None,
     The sheet is derived data and lags reality: a confirmation only becomes a
     row once app_scanner has parsed it, and this project keeps finding
     applications the parser missed — LinkedIn Easy Apply, SuccessFactors,
-    iCIMS display names. Voya was the expensive case. Its one row was a
+    iCIMS display names. Rosworth was the expensive case. Its one row was a
     rejected July role, so the company read as fully closed and its draft was
     deleted; a second application had gone in on 31 August and was simply not
     on the sheet.
@@ -213,7 +213,7 @@ def run(dry_run: bool = False) -> None:
 
     # Second gate, against Gmail rather than the sheet. See
     # has_newer_application: the sheet lags, and deleting on a stale read is
-    # what cost the Voya draft.
+    # what cost the Rosworth draft.
     print(f"Checking {len(dead)} closed-looking companies against Gmail "
           f"for newer applications...", flush=True)
     confirmations = _confirmations_by_company()
@@ -238,7 +238,7 @@ def run(dry_run: bool = False) -> None:
             continue
         for draft in list(drafts):
             domain = draft["domain"]
-            # Prefix either way: greenskiescleanenergy vs greenskies.com. The
+            # Prefix either way: velawise vs falerock.com. The
             # length floor stops a two-letter slug claiming a whole domain.
             by_domain = domain == slug or (
                 min(len(domain), len(slug)) >= 6

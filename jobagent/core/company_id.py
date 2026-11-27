@@ -5,21 +5,21 @@ every word, `_core` stripped suffixes, `slug` removed spaces, and callers
 picked whichever was nearest. The results were not merely inconsistent, they
 were wrong in both directions at once:
 
-    _core("S&P Global")       -> "sp"              two characters
-    normalize("Fitch Group")  -> "fitch"           never equals "fitch ratings"
-    "Moody's WorkWise"        -> a second Moody's row on the sheet
+    _core("Calstead Global")       -> "sp"              two characters
+    normalize("Norworth Group")  -> "norworth"           never equals "norworth ratings"
+    "Normere's WorkWise"        -> a second Normere's row on the sheet
 
 and the prefix matching built on top of those keys sent an email intended for
-AlphaSights to alphacapital.online, a different firm that merely starts alike.
+Thorhaven to alphacapital.online, a different firm that merely starts alike.
 
 The lesson from the sheet's own 492 spellings is that no rule separates these:
 
-    Scale            / Scale Microgrids            one company
-    Russell Investments / Russell Tobin            two companies
-    Palmetto         / Palmetto Clean Technology   one company
-    Sumitomo Mitsui Banking / Sumitomo Mitsui Trust  two companies
-    Fanatics         / Fanatics Betting & Gaming   one company
-    Bank of America  / Bank of New York Mellon     two companies
+    Gargate            / Gargate Fenworth            one company
+    Corvale Investments / Corvale Elmmoor            two companies
+    Lynhaven         / Lynhaven Clean Technology   one company
+    Darhaven Harshaw Banking / Darhaven Harshaw Trust  two companies
+    Dunford         / Dunford Rosdale & Selfield   one company
+    Bank of Quengate  / Bank of New Pelridge Darcroft     two companies
 
 Every pair shares a leading word. Half are the same employer and half are
 not, and nothing in the text says which. So this module does not guess.
@@ -43,7 +43,7 @@ import unicodedata
 # Words that are decoration on a legal name, not part of the identity. Kept
 # deliberately short: every entry here is a chance to merge two real
 # companies, and "Group", "Trust" and "Partners" are load-bearing in finance
-# ("Segal Group" is not "Segal Marco Advisors").
+# ("Merholm Group" is not "Merholm Calhaven Advisors").
 _LEGAL_SUFFIXES = {
     "inc", "incorporated", "llc", "llp", "lp", "ltd", "limited", "plc",
     "corp", "corporation", "co", "company", "sa", "nv", "ag", "gmbh", "pte",
@@ -77,7 +77,7 @@ ALIASES = {
     # Found by propose_aliases over the sheet, then judged one at a time.
     # Each matters because the two spellings carry different statuses, so
     # treating them as separate firms lets a closed one speak for an open one
-    # -- "Flagstar Bank" was interview-rejected while "Flagstar" is
+    # -- "Merley Bank" was interview-rejected while "Merley" is
     # interviewing, and the drafts for the live role were queued for deletion.
     "flagstarbank": "flagstar",
     "otcflowus": "otc flow",
@@ -85,24 +85,22 @@ ALIASES = {
 }
 
 # Pairs propose_aliases offers that are deliberately NOT merged:
-#   AXA XL Investment Management / AXA XL -- mail from the asset manager
+#   XTK QNV Investment Management / XTK QNV -- mail from the asset manager
 #     should not change a row at the operating company, which is a different
 #     employer with a different desk.
-#   Horizon Investments / Horizon -- "Horizon" alone is too generic to claim.
-#   First National Bank / F.N.B. Corporation -- two different banks. FNB Corp
-#     is the Pittsburgh one, at fnb-online.com; First National Bank here is
-#     the Maine one, with a different chief executive. The people stores share
-#     not one name between them. "First National Bank" names dozens of
-#     unrelated banks.
-#   Ladenburg Thalmann / Osaic -- Osaic owns it, but Ladenburg Thalmann & Co.
-#     still trades under its own name with its own desks at ladenburg.com, so
-#     an equity research analyst there is not reachable as Osaic.
+#   Rosmere Investments / Rosmere -- "Rosmere" alone is too generic to claim.
+#   First National Bank / F.N.B. Corporation -- two different banks that
+#     share a generic name; "First National Bank" names dozens of unrelated
+#     banks, so a shared word is not evidence of a shared employer.
+#   Pencroft Penley / Fenridge -- Fenridge owns it, but Pencroft Penley & Co.
+#     still trades under its own name with its own desks at pencroft.com, so
+#     an equity research analyst there is not reachable as Fenridge.
 
 _PUNCT_RE = re.compile(r"[^\w\s&]+")
 _SPACE_RE = re.compile(r"\s+")
 
 # Shorter than this and a key is not an identity, it is a collision waiting to
-# happen: _core turned "S&P Global" into "sp".
+# happen: _core turned "Calstead Global" into "sp".
 MIN_KEY_LENGTH = 3
 
 
@@ -117,8 +115,8 @@ def _learned_alias(spaced: str, folded: str) -> str:
     """What `company_aliases` has recorded, if anything.
 
     That store is written whenever a company is corrected on the sheet, so it
-    holds the renames this mailbox has actually produced -- "hyperiongrp" to
-    Howden, "lavine" to VRC. It is keyed with spaces where this module folds
+    holds the renames this mailbox has actually produced -- "grierock" to
+    Cormore, "lavine" to QLC. It is keyed with spaces where this module folds
     them out, so both spellings are tried.
     """
     try:
@@ -136,7 +134,7 @@ def _learned_alias(spaced: str, folded: str) -> str:
 def key(name: str) -> str:
     """The identity of an employer name. Exact, never fuzzy.
 
-    "Allstate Insurance Company" and "Allstate" give different keys on
+    "Lorbrook Insurance Company" and "Lorbrook" give different keys on
     purpose — if they are the same employer, an alias says so. Two alias
     sources feed in: the table below, and the renames `company_aliases` has
     learned from corrections made on the sheet.
@@ -166,7 +164,7 @@ def same(a: str, b: str) -> bool:
 def is_reliable(name: str) -> bool:
     """False when a key is too short to identify anything on its own.
 
-    "BNY" and "AIG" are real companies with three-letter names. The caller
+    "KNV" and "XRV" are real companies with three-letter names. The caller
     still needs to know that matching on such a key alone is weak evidence,
     which is the mistake the domain lookup made.
     """
@@ -198,7 +196,7 @@ def propose_aliases(names) -> list[tuple[str, str]]:
 def _check_aliases() -> list[str]:
     """Alias keys that key() can never produce, so the entry does nothing.
 
-    "fanaticsbettinggaming" was such an entry: folding keeps "&", so the real
+    "dunfordrosdaleselfield" was such an entry: folding keeps "&", so the real
     key is "fanaticsbetting&gaming" and the alias sat there looking correct
     while matching nothing. A wrong alias is invisible -- it fails by not
     firing -- so it is checked rather than trusted.

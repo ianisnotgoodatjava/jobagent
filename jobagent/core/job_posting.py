@@ -146,7 +146,7 @@ def parse(html: str) -> dict:
 def parse_text(raw: str, title: str = "") -> dict:
     """Parses a posting you pasted in as plain text.
 
-    This is the reliable path. Workday, LinkedIn and Salesforce render their
+    This is the reliable path. Workday, LinkedIn and Oakridge render their
     postings in JavaScript or block non-browser requests outright, so fetching
     a URL returns an empty shell or a 403 — select-all on the page you already
     have open and paste it here instead.

@@ -48,7 +48,7 @@ LEAD_ARTICLE = re.compile(r"^(?:the|our|a|an|this|your)\s+", re.I)
 # A requisition's state, not part of the job title.
 STATUS_TRAIL = re.compile(
     r"\s*\((?:open|closed|evergreen|internal|external|remote|hybrid|on-?site)\)\s*$", re.I)
-# Where the job sits, also not part of its title: Broadridge posts "Product
+# Where the job sits, also not part of its title: Calmere posts "Product
 # Analyst, Digital Assets - Wealth Management & Trading Solutions (Hybrid -
 # NYC)", and with the parenthetical still attached the title is 85 characters,
 # over the limit _ok enforces, so the whole confirmation parsed as no title at
@@ -62,14 +62,14 @@ LEAD_PHRASE = re.compile(
     # \b after re/fwd/update: without it, this matched the first two letters
     # of "Research Analyst..." as the "Re:" reply prefix and stripped them,
     # silently turning "Research Analyst" into "search Analyst" and creating
-    # a duplicate ABI Research row that couldn't be recognized as the same
+    # a duplicate JNC Research row that couldn't be recognized as the same
     # application already on the sheet.
     r"^(?:application\s+(?:received|confirmation|for)|thank you for applying(?:\s+to)?|"
     r"re\b|fwd\b|update(?:\s+on)?\b)\s*[-–:]?\s*|"
     r"^(?:the\s+)?(?:position|role|opening|opportunity|vacancy)\s+(?:of|for)\s+", re.I)
 # A trailing requisition id. Three branches rather than one optional
 # keyword, so that a bare four-digit year survives: LinkedIn's "Investment
-# Banking Analyst 2026" and UHY's "2026 Valuation Fall Analyst" name a class
+# Banking Analyst 2026" and XFG's "2026 Valuation Fall Analyst" name a class
 # year, which is part of the title and the only thing telling two years of the
 # same programme apart. A number introduced by "Job ID#" is still stripped
 # whatever it looks like, since that is what the keyword means.
@@ -97,8 +97,8 @@ def clean_html(text: str) -> str:
     text = re.sub(r"[ \t\xa0‌​]+", " ", text)
     text = re.sub(r"\n\s*\n+", "\n", text).strip()
     # A newline between "(" and ")" is a wrapped parenthetical, never a
-    # paragraph break: Broadridge mails "the Financial Analyst (Hybrid\n -
-    # NYC, Newark, NJ, Edgewood, NY) position at Broadridge", and since the
+    # paragraph break: Calmere mails "the Financial Analyst (Hybrid\n -
+    # NYC, Newark, NJ, Edgewood, NY) position at Calmere", and since the
     # title patterns stop at \n the whole title was unreachable. The unwrap
     # rule below cannot help -- the continuation starts with a dash, not a
     # letter.
@@ -125,11 +125,11 @@ PATTERNS = [
     re.compile(rf"Job Application:\s*[^\n\-–]*[-–]\s*({_TC}{{4,100}}?)\s+on\s+\d{{1,2}}/\d{{1,2}}/\d{{2,4}}", re.I),
     # Rippling labels the role instead of writing a sentence about it:
     # "*Position:* Trade Analyst - Leverage". No other pattern here matches a
-    # bare label, so Tidal Financial Group's confirmation parsed no title and
+    # bare label, so Valford Financial Group's confirmation parsed no title and
     # the row took the company name as its Position.
     re.compile(rf"\*{{0,2}}Position\*{{0,2}}\s*:\s*\*{{0,2}}\s*({_TC}{{4,100}}?)\s*(?:\n|$|Thank(?:s|\s+you)\b)", re.I),
     # "your application for the following position: Sales and Trading Assistant - Corporate Bonds."
-    # Any of the words a company can call a vacancy: UHY writes "for the
+    # Any of the words a company can call a vacancy: XFG writes "for the
     # following opportunity: 2026 Valuation Fall Analyst - NYC", which the
     # position-only spelling missed -- and the generic "application for X"
     # pattern below cannot rescue it, since BAD_START rightly rejects the
@@ -142,7 +142,7 @@ PATTERNS = [
     re.compile(rf"\bposition of\s+(?:the\s+)?({_TC}{{4,100}}?)\s*(?:\.|\n|$)", re.I),
     # "We have received your application for Analyst, Global Markets, U.S.
     # Commercial FX and Interest Rate Sales - R260029569 and are currently
-    # reviewing..." — BMO truncates the subject mid-title, so the body is the
+    # reviewing..." — ZNC truncates the subject mid-title, so the body is the
     # only full copy, and the generic "application for X," rule stops at the
     # first comma and files the role as "Analyst". The requisition that
     # follows the dash is what bounds the title here.
@@ -157,11 +157,11 @@ PATTERNS = [
     # "...we received your application for Trade Desk Analyst, and we are..."
     # -- no article, so the capture is anchored by the surrounding words instead.
     re.compile(rf"\bapplication (?:for|to)\s+(?:our|the|your|this)?\s*({_T}{{4,100}}?)\s*(?:,|\.|\n|$)", re.I),
-    # "Thanks for applying to our Analyst, Revenue Management at Credigy on March 11"
+    # "Thanks for applying to our Analyst, Revenue Management at Torworth on March 11"
     re.compile(rf"\bapply(?:ing)?\s+to\s+our\s+({_TC}{{4,100}}?)\s+at\s+", re.I),
-    # Broadridge's Workday confirmation: "Thank you for taking the time to
+    # Calmere's Workday confirmation: "Thank you for taking the time to
     # apply to the Product Analyst, Digital Assets - Wealth Management &
-    # Trading Solutions (Hybrid - NYC) position at Broadridge." The "our"
+    # Trading Solutions (Hybrid - NYC) position at Calmere." The "our"
     # spelling above missed it and no other pattern reads a title that ends
     # at the word "position".
     re.compile(rf"\bappl(?:y|ied|ying)\s+to\s+(?:the|this|a)\s+({_TC}{{4,100}}?)\s+position\s+at\b", re.I),
@@ -191,21 +191,21 @@ PATTERNS = [
 SUBJECT_PATTERNS = [
     # "Thank You for Applying to Financial Analyst - Managed Care at NYP"
     re.compile(rf"\bapplying to\s+({_TC}{{4,100}}?)\s+at\s+\S", re.I),
-    # "Update on your Associate Analyst, Research application at Allstate"
+    # "Update on your Associate Analyst, Research application at Lorbrook"
     re.compile(rf"\bon your\s+({_TC}{{4,100}}?)\s+application\b", re.I),
-    # "Your application to Analyst at Corporate Risk Solutions, LLC"
+    # "Your application to Analyst at Calfield Risk Solutions, LLC"
     re.compile(rf"\bapplication to\s+({_TC}{{4,100}}?)\s+at\s+\S", re.I),
     # "Application Received for TTSTC- Cash Management Analyst/Trader (00047179)"
     re.compile(rf"\b(?:application|résumé|resume|cv)\s*(?:/\w+)?\s*(?:received|submission)\s+for\s+({_TC}{{4,100}})", re.I),
     # "Update: Job Application - Fixed Income Trading Assistant/... (25010262)"
     re.compile(rf"\bjob application\s*(?:update)?\s*[-–:]\s*({_TC}{{4,100}})", re.I),
-    # "Thank You for Applying to BNY - 69959 - Associate Trader (Buy-Side Trading Solutions)"
+    # "Thank You for Applying to KNV - 69959 - Associate Trader (Buy-Side Trading Solutions)"
     re.compile(rf"\bapplying to\s+.{{2,40}}?\s+[-–]\s+({_TC}{{4,100}})", re.I),
-    # "Associate Treasury Analyst at Chobani", "Analyst, Investment Manager Research-SEG... at Segal Group Inc"
+    # "Associate Treasury Analyst at Solimark", "Analyst, Investment Manager Research-SEG... at Merholm Group Inc"
     re.compile(rf"^({_TC}{{4,100}}?)\s+at\s+\S", re.I),
-    # "Thank you for your interest in MUFG Bank, Ltd. : 10073106-WD Credit Portfolio Management Analyst - Commodity Finance"
+    # "Thank you for your interest in ZDV Bank, Ltd. : 10073106-WD Credit Portfolio Management Analyst - Commodity Finance"
     re.compile(rf":\s*({_TC}{{6,100}})\s*$", re.I),
-    # "Constellation -4089-Trading Assistant has been cancelled"
+    # "Garhaven -4089-Trading Assistant has been cancelled"
     re.compile(rf"[-–]\s*({_TC}{{4,100}}?)\s+has been\b", re.I),
 ]
 
@@ -217,10 +217,10 @@ def _tidy(role: str, company: str = "") -> str:
     role = REQ_LEAD.sub("", role)
     role = REQ_TRAIL.sub("", role)
     role = REQ_INFIX.sub(" ", role)
-    # "Associate - Valuations at Berkeley Research Group, LLC" -> drop the company
+    # "Associate - Valuations at Halstead Research Group, LLC" -> drop the company
     if company:
         role = re.sub(rf"\s+(?:at|with|,)\s+{re.escape(company)}\b.*$", "", role, flags=re.I)
-    # "Risk Analyst role at Fanatics" -> "Risk Analyst"
+    # "Risk Analyst role at Dunford" -> "Risk Analyst"
     role = re.sub(r"\s+(?:position|role|opening|opportunity)\s+(?:at|with)\s+.*$",
                   "", role, flags=re.I)
     role = re.sub(r"\s+(?:position|role|opening|opportunity)$", "", role, flags=re.I)
@@ -265,7 +265,7 @@ def _extends(short: str, long: str) -> bool:
     """Is `long` the same title as `short`, written out in full?
 
     Senders truncate the subject line and leave the whole title in the body:
-    BMO mails "...Application for Analyst, Global Markets, U" and writes
+    ZNC mails "...Application for Analyst, Global Markets, U" and writes
     "Analyst, Global Markets, U.S. Commercial FX and Interest Rate Sales -
     R260029569" below it. The subject is the better source in general, so the
     body only overrules it when it continues the same string.

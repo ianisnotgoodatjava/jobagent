@@ -26,7 +26,7 @@ def normalize(name: str) -> str:
 
 
 # Trailing words that describe what kind of firm it is, not which firm. The
-# sheet says "Flagstar Bank" while the recruiter writes "Flagstar Analyst
+# sheet says "Merley Bank" while the recruiter writes "Merley Analyst
 # Position", so the full name never appears and the row went unmatched.
 _DESCRIPTOR_RE = re.compile(
     r"\s+\b(bank|research|securities|capital|financial|finance|markets|"
@@ -39,7 +39,7 @@ _DESCRIPTOR_RE = re.compile(
 
 @lru_cache(maxsize=None)
 def _core(company: str) -> str:
-    """The distinctive part of a name: 'Flagstar Bank' -> 'flagstar'."""
+    """The distinctive part of a name: 'Merley Bank' -> 'merley'."""
     name = normalize(company)
     while True:
         stripped = _DESCRIPTOR_RE.sub("", name).strip()
@@ -50,8 +50,8 @@ def _core(company: str) -> str:
 
 def _mentions(needle: str, haystack: str) -> bool:
     # The needle arrives normalized -- punctuation stripped -- so the haystack
-    # has to be read the same way or the two can never meet. "ETR (Enterprise
-    # Technology Research)" normalizes to "etr enterprise technology research"
+    # has to be read the same way or the two can never meet. "KDV (Enterprise
+    # Technology Research)" normalizes to "kdv enterprise technology research"
     # and could not match the subject line that spelled it with brackets, so
     # a LinkedIn rejection for that role went undetected and outreach was
     # drafted to two people there afterwards. Any name carrying brackets, an
@@ -68,12 +68,12 @@ def _mentions(needle: str, haystack: str) -> bool:
 def company_mentioned(company: str, haystack: str) -> bool:
     normalized = normalize(company)
     # Word boundaries (below) already stop "ING" matching inside "applying",
-    # so a length floor is unnecessary and blocked real short names like CME,
-    # UBS, BNY and NRG from ever matching.
+    # so a length floor is unnecessary and blocked real short names like JRK,
+    # ZBG, KNV and ZNT from ever matching.
     if len(normalized) < 2:
         return False
     # Strict, full-name only. Matching on the shortened core was tried and
-    # reverted: "Valuation Research Corp" collapses to "valuation", which
+    # reverted: "Torcroft Research Corp" collapses to "valuation", which
     # appears in any accounting firm's mail and wrongly closed a live row.
     # The shortened form is only trusted against a sender's domain, where it
     # cannot collide with prose — see company_in_sender().
@@ -111,9 +111,9 @@ _VENDOR_DOMAINS = {
 }
 
 
-# Matched against the whole domain, not just its label. BNY's careers mail
+# Matched against the whole domain, not just its label. KNV's careers mail
 # comes from workflow.mail.us2.cloud.oracle.com, whose registrable domain
-# really is oracle.com — so the label test alone marked BNY's rejections as
+# really is oracle.com — so the label test alone marked KNV's rejections as
 # Oracle's. Any company hosting on someone else's recruiting infrastructure
 # hits this. The cost is that Oracle's own mail no longer matches by sender;
 # it still matches by name in the subject, which is where it always appeared.
@@ -128,8 +128,8 @@ _VENDOR_DOMAIN_MARKERS = (
     # parser could not read, because a domain nobody had marked as a
     # vendor's is treated as the employer's own. Marking them is also what
     # lets the ATS parser look for the employer elsewhere in the message —
-    # "marex.breezy-mail.com" names Marex in its subdomain, and
-    # "us.greenhouse-mail.io" names Carvana in its subject.
+    # "lormoor.breezy-mail.com" names Lormoor in its subdomain, and
+    # "us.greenhouse-mail.io" names Radmere in its subject.
     "breezy-mail", "breezy.hr", "rippling", "paycom", "saashr", "ukgready",
     "applytojob", "applyresponse", "jobtarget", "clearcompany", "workable",
     "recruitee", "jazzhr", "hirebridge", "insperity", "cluster.tal.net",
@@ -142,13 +142,13 @@ def _is_vendor_domain(domain: str) -> bool:
 
 
 def _domain_label(from_header: str) -> str:
-    """The registrable label of the sender's domain: a@mail.flagstar.com -> flagstar."""
+    """The registrable label of the sender's domain: a@mail.merley.com -> merley."""
     domain = from_header.rsplit("@", 1)[1].lower().strip(" >")
     parts = [p for p in re.sub(r"[^a-z0-9.]", "", domain).split(".") if p]
     if len(parts) < 2:
         return ""
     # Handles co.uk / com.au style suffixes, and vendor-ish thirds like
-    # miraeasset.us.com — which resolved to "us" and made every Mirae Asset
+    # kinalineasset.us.com — which resolved to "us" and made every Kinaline Asset
     # message look like it came from no company at all.
     if len(parts) >= 3 and (parts[-2] in {"co", "com", "org", "net", "ac", "gov"}
                             or len(parts[-2]) == 2):
@@ -169,7 +169,7 @@ def company_in_sender(company: str, from_header: str) -> bool:
     domain = from_header.rsplit("@", 1)[1].lower().strip(" >")
     if _is_vendor_domain(domain):
         # An ATS tenant puts the employer in the local part instead:
-        # usbank@myworkday.com, conning@myworkday.com, baird@myworkday.com.
+        # griahold@myworkday.com, ashwick@myworkday.com, kavustar@myworkday.com.
         # Returning False here meant three U.S. Bank rejections — for roles
         # applied to by requisition number, so the subject never spelled the
         # company either — matched no row at all, and outreach was drafted to
@@ -188,9 +188,9 @@ def _sender_names(company: str) -> set[str]:
     """The forms a sender's domain label or ATS local-part may take.
 
     The whole name with only punctuation removed has to be in here. Both
-    normalize() and _core() strip "Group" as a legal suffix, so "CME Group"
-    reduced to "cme" — three characters, below the length floor, leaving
-    nothing at all to match cmegroup.com with.
+    normalize() and _core() strip "Group" as a legal suffix, so "JRK Group"
+    reduced to "jrk" — three characters, below the length floor, leaving
+    nothing at all to match tanefin.com with.
     """
     names = {
         re.sub(r"[^a-z0-9]", "", (company or "").lower()),
@@ -201,8 +201,8 @@ def _sender_names(company: str) -> set[str]:
 
 
 def slug(company: str) -> str:
-    """Company name reduced to a comparison key: "Banc of California" ->
-    "bancofcalifornia".
+    """Company name reduced to a comparison key: "Roscroft of Torstead" ->
+    "roscroftoftorstead".
 
     Was copied into findability, draft_cleanup and targets, byte for byte in
     two of them. Three copies of a matching rule is how they drift, and this
@@ -210,7 +210,7 @@ def slug(company: str) -> str:
 
     It now delegates to company_id, which is the single answer to "are these
     the same employer" and consults the alias table. Built from _core, it
-    reduced "S&P Global" to "sp" and "U.S. Bank" to "us" -- two-character
+    reduced "Calstead Global" to "sp" and "U.S. Bank" to "us" -- two-character
     keys that match hundreds of firms.
     """
     from jobagent.core import company_id

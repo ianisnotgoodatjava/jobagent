@@ -33,7 +33,7 @@ def strip_req(title: str) -> str:
 
 
 _ROLE_TRAILER_RE = re.compile(
-    r"\s+(?:at|with|for)\s+[A-Z0-9].*$"          # "... at Everest"
+    r"\s+(?:at|with|for)\s+[A-Z0-9].*$"          # "... at Darton"
     r"|\s*[>|].*$"                                # quoted-reply markers
     r"|\s+and\s+(?:thank|for|we|to)\b.*$"         # run-on into body prose
     r"|\s*,\s*and\b.*$"
@@ -106,7 +106,7 @@ def _title_tokens(title: str) -> set[str]:
 def _role_match(a: str, b: str) -> str:
     """How confidently two titles are the same role: '', 'fuzzy', or 'sure'.
 
-    Token overlap alone is not enough to delete on. Fitch's "Structured
+    Token overlap alone is not enough to delete on. Norworth's "Structured
     Finance - ABS / CMBS / RMBS, Analyst - New York" titles share every word
     except the one that matters, and a 0.6-overlap rule wanted to merge three
     separate applications into one. So overlap only ever reports a *fuzzy*
@@ -117,7 +117,7 @@ def _role_match(a: str, b: str) -> str:
         return ""
     if na == nb:
         return "sure"
-    # "Consultant" vs "Consultant at Natixis" — the same title with the
+    # "Consultant" vs "Consultant at Selmore" — the same title with the
     # company dragged along.
     if na.startswith(nb) or nb.startswith(na):
         return "sure"

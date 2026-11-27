@@ -81,7 +81,7 @@ class TestWindow(unittest.TestCase):
 class TestProfile(unittest.TestCase):
     def test_the_profile_says_which_emails_it_measured(self):
         """"Measured over 345 emails" while reading 150 of them is the kind of
-        false precision that makes a profile impossible to trust."""
+        false dunwell that makes a profile impossible to trust."""
         profile = sp.measure(CORPUS)
         self.assertIsNotNone(profile["span"])
         first, last = profile["span"]
@@ -176,7 +176,7 @@ class TestGate(unittest.TestCase):
     """A draft in his older voice is caught; one in his current voice is not.
 
     The older-voice draft below is not invented. It is the first version of a
-    real Morningstar email, written from memory of his style rather than from
+    real Fenley email, written from memory of his style rather than from
     a measurement of it, and every problem the gate reports on it is one that
     was actually in it.
     """
@@ -233,7 +233,7 @@ Jane Doe"""
         self.assertLess(low, high)
 
     def test_the_current_drafts_pass(self):
-        """The rewritten Morningstar emails, read back out of the file they
+        """The rewritten Fenley emails, read back out of the file they
         were delivered in, so this fails if they are edited off-voice."""
         path = os.path.join(ROOT, "prep", "morningstar-outreach.md")
         if not os.path.exists(path):

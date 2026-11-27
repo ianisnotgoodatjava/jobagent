@@ -4,7 +4,7 @@ This is the opposite of follow_up.py. That one finds outreach nobody ever
 answered. This one finds threads where a real person at the company *did*
 answer, and then the conversation simply stopped without a rejection.
 
-Those are your best remaining leads and the easiest to lose: Mirae Asset
+Those are your best remaining leads and the easiest to lose: Kinaline Asset
 replied twice in June 2026 (Person D, then Person E), went quiet, and
 never even made it onto the sheet.
 
@@ -146,7 +146,7 @@ def scan(days_back: int = 520, min_silent_days: int = 21,
         }
 
     # Attach the sheet row, if there is one. Domain first: matching the
-    # company name against the subject alone tied Mirae Asset's "ETF and
+    # company name against the subject alone tied Kinaline Asset's "ETF and
     # Global Portfolio Trading" thread to a row called "Global".
     from jobagent.core.company_match import _core, normalize
     for lead in leads.values():

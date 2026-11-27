@@ -29,7 +29,7 @@ class TestAddressConfidence:
 
     Three tiers, strongest first: mail already delivered to that domain
     pattern, an address the firm publishes, and a pattern guess. A bounce
-    burns the contact, so the distinction has to survive the prose.
+    pimufin the contact, so the distinction has to survive the prose.
     """
 
     def test_delivery_history_is_the_strongest_signal(self):
@@ -578,7 +578,7 @@ class TestWatchRowCounting:
 class TestReapplication:
     """A second row for a role already on the sheet needs real proof.
 
-    The gap rule alone let KBRA's interview-scheduling email — a person, two
+    The gap rule alone let JRS's interview-scheduling email — a person, two
     months after the application, with the role in the subject — open a
     duplicate row for a role that was already in interview.
     """
@@ -590,8 +590,8 @@ class TestReapplication:
         from jobagent.sources import app_scanner
         import datetime
         assert app_scanner._reapplied(
-            self.msg("Thank You for Applying - Kroll",
-                     "Kroll Talent Acquisition <TalentAcquisition@kroll.com>",
+            self.msg("Thank You for Applying - Brincroft",
+                     "Brincroft Talent Acquisition <TalentAcquisition@kroll.com>",
                      "We received your job application for Analyst, Financial "
                      "Instruments & Technology - 21014255.",
                      "Sat, 14 Nov 2026 09:00:00 -0500"),

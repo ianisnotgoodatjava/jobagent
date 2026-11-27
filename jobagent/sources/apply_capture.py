@@ -31,7 +31,7 @@ _TITLE_TAG_RE = re.compile(r"<title[^>]*>(.*?)</title>", re.I | re.S)
 # "Analyst, Fixed Income at Acme Capital | Acme Careers" -> title, company.
 # Split on the last separator, and only on " at "/"|" unless nothing else
 # matches: job titles are full of hyphens ("ABS Surveillance Data Entry
-# Analyst (NY) - Kroll Bond Rating Agency" split on the first "-" loses half
+# Analyst (NY) - Brincroft Bond Rating Agency" split on the first "-" loses half
 # the title).
 _TITLE_SPLIT_RE = re.compile(r"^(.*)\s+(?:at|@|\|)\s+(.+?)\s*$", re.I)
 _TITLE_DASH_RE = re.compile(r"^(.*)\s+[-–—]\s+(.+?)\s*$")

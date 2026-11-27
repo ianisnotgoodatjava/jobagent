@@ -68,7 +68,7 @@ def run(days_back: int = 520, limit: int = 700) -> None:
     report = []
     for r in rows:
         # Match on both the shortened core and the full name. Requiring 4+
-        # characters was dropping every short company: "ABI Research" cores
+        # characters was dropping every short company: "JNC Research" cores
         # down to "abi", so a thread where a contact had already replied was
         # reported as "nobody contacted".
         candidates = {company_slug(r["Company"]), normalize(r["Company"]).replace(" ", "")}

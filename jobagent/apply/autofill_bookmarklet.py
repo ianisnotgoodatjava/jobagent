@@ -63,10 +63,10 @@ MATCHERS = [
 
 # Demographic questions are the applicant's to answer, and a filler that
 # walks the page will happily put a city into an ethnicity field -- which is
-# exactly what the first version did on KBRA's Greenhouse form.
+# exactly what the first version did on JRS's Greenhouse form.
 EEO_FIELDS = ("pronoun",)
 
-# Consent is given, not filled in. On KBRA's form the privacy-acknowledgement
+# Consent is given, not filled in. On JRS's form the privacy-acknowledgement
 # field was matched by "state" -- as a substring of "Privacy Statement" -- and
 # answered "NY". Agreeing to a privacy policy on someone's behalf is not a
 # typing shortcut, so these are refused outright as well.
@@ -74,7 +74,7 @@ CONSENT_FIELDS = ("acknowledge", "consent", "privacy", "terms", "i agree",
                   "certify", "authorize the", "policy")
 
 # Work authorization and sponsorship are answered by RULES below, not by
-# keyword length, because length is the wrong tiebreaker. KBRA's sponsorship
+# keyword length, because length is the wrong tiebreaker. JRS's sponsorship
 # question reads "Do you require immigration sponsorship to attain or
 # maintain your employment eligibility... sponsorship by your employer" -- it
 # contains "employer", "sponsorship" and "work authorization" at once.

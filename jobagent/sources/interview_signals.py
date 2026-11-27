@@ -11,7 +11,7 @@ Two questions, both answered from the same vocabulary:
     to flip a live row to `interviewing`.
 
 The phrase lists are taken from real mail in this account, not invented:
-Wolfe Research wrote "taking the time to interview", Flagstar wrote
+Wenley Research wrote "taking the time to interview", Merley wrote
 "I enjoyed meeting with you". Both are post-interview tells that no amount of
 rejection-phrase matching would have caught.
 """
@@ -35,7 +35,7 @@ POST_INTERVIEW_PHRASES = [
     "thank you for speaking with",
     "thank you for taking the time to speak",
     "thanks for taking the time to speak",
-    # Warm close from a human interviewer (Flagstar's wording).
+    # Warm close from a human interviewer (Merley's wording).
     "enjoyed meeting with you",
     "enjoyed meeting you",
     "enjoyed speaking with you",
@@ -114,7 +114,7 @@ INTERVIEW_INVITE_PHRASES = [
     "i will give you a call",
     "i will coordinate a time",
     "coordinate a time for us to connect",
-    # Gilmartin's AVP wrote "I'd like to schedule a brief call ... for a 15/20
+    # Penridge's AVP wrote "I'd like to schedule a brief call ... for a 15/20
     # min call and I can send an invite", and none of the above matched: the
     # list only had the formal "would like to", never the contraction, and
     # only "learn more about your background", never "learn more about you".
@@ -187,7 +187,7 @@ _AUTOMATED_RE = re.compile(
 
 # An out-of-office autoresponder comes from the person's own mailbox (real
 # address, passes _AUTOMATED_RE clean), but it is still nobody actually
-# reading or answering you. Blommer's Person R and 1823 Partners'
+# reading or answering you. Zenufin's Person R and 1978 Partners'
 # Person F each sent one of these off a cold email and neither has ever
 # replied for real.
 _AUTORESPONSE_SUBJECT_RE = re.compile(
@@ -235,7 +235,7 @@ def invite_evidence(msg: dict) -> str | None:
 
 # Your cold-outreach threads all carry this subject shape, and the thank-you
 # note you send after a networking coffee chat looks word-for-word like the one
-# you send after an interview. BMO was marked interview-rejected off a chat
+# you send after an interview. ZNC was marked interview-rejected off a chat
 # with someone who was only ever helping you look — a real conversation, worth
 # Network=TRUE, but not an interview for the role.
 _NETWORKING_SUBJECT_RE = re.compile(
@@ -261,7 +261,7 @@ def _self_note_evidence(msg: dict) -> str | None:
     they let through to this point.
 
     The subject test keys on "Thank you...", which is also how every ATS
-    opens its confirmation ("Thank you for applying to SMBC") — callers must
+    opens its confirmation ("Thank you for applying to WBV") — callers must
     have already excluded inbound mail before reaching here, or an
     application receipt reads as proof you had interviewed.
     """
@@ -278,7 +278,7 @@ def self_interview_evidence(msg: dict) -> str | None:
     A note in one of your outreach threads never counts, with no escape
     hatch. Allowing one for notes that mention "the role" or "next steps" was
     tried and reverted: those threads are *about* roles, so the wording shows
-    up in ordinary coffee chats and it re-flagged bp and Liberty Mutual as
+    up in ordinary coffee chats and it re-flagged bp and Roston Belworth as
     interviews that never happened. Networking notes still set Network=TRUE
     via self_networking_evidence(); they just never move Status.
     """

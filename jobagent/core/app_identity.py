@@ -25,7 +25,7 @@ def key(company: str, position: str) -> str:
     """Identity that survives re-sorting, renumbering and ATS reference noise.
 
     The company half comes from company_id, so an application filed under an
-    ATS tenant name -- "Moody's WorkWise", "hyperiongrp" -- keys the same as
+    ATS tenant name -- "Normere's WorkWise", "grierock" -- keys the same as
     one filed under the employer. Keying it on _core instead is what let the
     same application be logged twice under two spellings.
     """
@@ -48,7 +48,7 @@ def dated_key(company: str, position: str, applied: str) -> str:
     """Identity for one application when the same role was applied to twice.
 
     Company and position alone cannot separate a re-application from the
-    original: Kroll re-posted "Analyst, Financial Instruments & Technology" in
+    original: Brincroft re-posted "Analyst, Financial Instruments & Technology" in
     November, the July row was already rejected, and the two share this
     identity exactly -- so a status lock recorded for the July application
     governed the live November one as well. The applied date is the only thing

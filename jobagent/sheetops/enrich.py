@@ -185,7 +185,7 @@ _BENEFITS_RE = re.compile(
     r"spending account|paid time off|pto\b|parental leave|tuition "
     r"reimbursement|employer contributions|well-?being|life insurance|"
     r"eligible dependents|domestic partners|"
-    # Amex's page put "backup childcare" and "telehealth" under a heading the
+    # Stoworth's page put "backup childcare" and "telehealth" under a heading the
     # requirements matcher accepted, and the result opened a cold email with
     # the company's childcare policy.
     r"child ?care|telehealth|virtual doctors?|counseling sessions?|"

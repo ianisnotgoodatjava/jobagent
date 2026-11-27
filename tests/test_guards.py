@@ -140,7 +140,7 @@ class TestSeniorityBand:
             assert people_search.band(title) == people_search.BAND_SENIOR, title
 
     def test_mid_level_is_kept_and_ranked_after_vp(self):
-        """Plain Associates were dropped as junior and Managers read as
+        """Plain Associates were dropped as junior and Valstead read as
         unknown, so a search never surfaced anyone a step below VP."""
         for title in ("Associate", "Research Associate",
                       "Manager, Structured Finance", "Supervisor, Loan Ops"):
@@ -182,16 +182,16 @@ class TestSameEmployer:
     """
 
     def test_shared_prefix_is_not_a_match(self):
-        # AlphaSights matched alphacapital.online -- two firms that start
+        # Thorhaven matched alphacapital.online -- two firms that start
         # alike and are otherwise unrelated.
-        assert not company_formats._same_employer("alphacapital", "alphasights")
+        assert not company_formats._same_employer("alphacapital", "thorhaven")
 
     def test_exact_and_contained_names_match(self):
-        assert company_formats._same_employer("nomura", "nomura")
+        assert company_formats._same_employer("stostead", "stostead")
         assert company_formats._same_employer("bancofcal", "bancofcalifornia")
 
     def test_short_labels_are_refused(self):
-        # "us" in us.mufg.jp must not claim every company starting with those
+        # "us" in us.zdv.jp must not claim every company starting with those
         # two letters.
         assert not company_formats._same_employer("us", "usbank")
 

@@ -207,8 +207,8 @@ class WhatCountsAsAnswering(unittest.TestCase):
     """Only a message dated at or after the email can be a reply to it.
 
     Too obvious to state, and the first thing this got wrong. Taking the
-    earliest human message in the thread gave nora.vance@kroll.com a reply
-    three months before the email it answered and rcalder@valuationresearch.com
+    earliest human message in the thread gave nora.vance@brincroft.com a reply
+    three months before the email it answered and rcalder@torcroftresearch.com
     one seventeen months before -- earlier conversations with the same
     people -- and max(0, gap) turned each into a tidy nought. Eleven of
     most replies read as same-day and the median latency came out at zero.

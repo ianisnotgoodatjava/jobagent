@@ -114,8 +114,8 @@ def already_addressed(name: str, domain: str,
 
     is_duplicate() compares addresses, and two runs that disagreed about a
     firm's convention produced two addresses for one human: Drafts held both
-    nora@unorthodoxventures.com, built when the site suggested first-name
-    only, and nora.vance@unorthodoxventures.com, built the next night from
+    nora@lorwellventures.com, built when the site suggested first-name
+    only, and nora.vance@lorwellventures.com, built the next night from
     first.last. Same person, same firm, same subject line, two emails.
 
     A person has one address and the convention is what is uncertain, so the

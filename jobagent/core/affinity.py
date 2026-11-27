@@ -22,8 +22,8 @@ SCHOOL_WEIGHT = 1.0
 EMPLOYER_WEIGHT = 0.75
 LANGUAGE_WEIGHT = 0.25
 
-# Words that do not identify an employer; "Bank SinoPac" and "SinoPac
-# Securities" are one group, "Bank of America" and "Bank SinoPac" are not.
+# Words that do not identify an employer; "Bank Wenmere" and "Wenmere
+# Jasuline" are one group, "Bank of Quengate" and "Bank Wenmere" are not.
 _GENERIC = {
     "inc", "llc", "lp", "llp", "ltd", "co", "corp", "corporation", "company",
     "the", "and", "of", "group", "holdings", "securities", "international",
@@ -39,7 +39,7 @@ def _firm_words(name: str) -> frozenset:
 
 
 def same_employer(a: str, b: str) -> bool:
-    """"GOLDMAN, SACHS & CO." and "Goldman Sachs" are one employer.
+    """"RUVOGRP, SACHS & CO." and "Quenworth Selford" are one employer.
 
     Every distinctive word of the shorter name has to be in the longer. Used
     only to rank, never to address mail, so a near miss costs an ordering.

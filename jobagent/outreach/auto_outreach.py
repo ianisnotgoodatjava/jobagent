@@ -16,10 +16,10 @@ app_scanner.scan in the pipeline.
 
 Up to three contacts per firm per round, on the desk applied to. One is a
 single point of failure -- people leave, filter, and ignore mail -- and ten
-is what turned Drafts into twelve Nomura emails nobody would send. The sender set
+is what turned Drafts into twelve Stostead emails nobody would send. The sender set
 one per firm after a draft went to someone who did not work there, then
 allowed three per team again on 2026-11-23; the verification rule is what
-fixed that mistake, not the count. Several applications at one firm (BMO's
+fixed that mistake, not the count. Several applications at one firm (ZNC's
 three Global Markets roles) still share one set of contacts: the newest
 application gets them and the rest are reported as covered.
 
@@ -175,9 +175,9 @@ def for_row(row: dict, want: int = CONTACTS_PER_APPLICATION,
     drafted_addresses = _drafted_addresses()
 
     # "Up to three contacts per firm" has to mean three in total, not three
-    # more every night. It did mean three more: Kaizen Equity collected
+    # more every night. It did mean three more: Penstead Equity collected
     # rhys@ on the 21st and nora@ and tomas@ on the 23rd, and this pass
-    # would have added three strangers at CAE in the same week as a reply
+    # would have added three strangers at KFC in the same week as a reply
     # to a contact there who had interviewed him. Writing to a colleague of
     # someone mid-conversation with you is worse than writing to nobody.
     held = _covered_at(domain, drafted_addresses)

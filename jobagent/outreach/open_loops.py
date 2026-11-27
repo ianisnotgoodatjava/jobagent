@@ -4,13 +4,13 @@ This is the signal the rest of the project misses. reoutreach finds threads
 that went quiet; follow_up finds outreach that got no reply. Neither catches
 the opposite and more valuable case -- a real person replied, asked for
 something, and the ball has been sitting in your court since. Person G
-at Fitch asked "do you know who the hiring manager or HR contact are?" and
+at Norworth asked "do you know who the hiring manager or HR contact are?" and
 that question sat for a day while cold emails were written to strangers.
 
 The naive version of this -- "whoever wrote last" -- was wrong on all three
 threads it found, and every failure is worth keeping as a rule:
 
-  ProShares      Jane Doe's last line was "Best of luck", after he had
+  Kelshaw      Jane Doe's last line was "Best of luck", after he had
                  already taken the call and forwarded the resume. A closing
                  pleasantry is the end of a conversation, not an open one.
   a research firm  the "message" was a [like] reaction to a thank-you.
@@ -110,7 +110,7 @@ def scan(days_back: int = 120, limit: int = 900) -> list[dict]:
         # The search is only a candidate generator. It pages through hundreds
         # of messages and drops some to read errors, so a thread arrives here
         # partially fetched and its apparent last message may not be the real
-        # one. Webster Bank looked like an unanswered question that way; the
+        # one. Torvale Bank looked like an unanswered question that way; the
         # actual last message in that thread was the sender's own reply. Every
         # candidate is re-fetched in full before it is judged.
         try:

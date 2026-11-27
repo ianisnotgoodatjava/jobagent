@@ -1,11 +1,11 @@
 """Finds rows that are the same application logged twice.
 
-You kept spotting these by eye (306/307, 345/347, the TikTok pair), which is
+You kept spotting these by eye (306/307, 345/347, the Cormere pair), which is
 the sign a check belongs in code. Exact matching does not find them, because
 every pair differed in some small way:
 
-  * "BMO" vs "BMO Capital Markets"                    — company written differently
-  * "...Consultant" vs "...Consultant at Natixis..."  — title dragged the company along
+  * "ZNC" vs "ZNC Capital Markets"                    — company written differently
+  * "...Consultant" vs "...Consultant at Selmore..."  — title dragged the company along
   * 5/11 vs 5/12                                      — confirmation arrived a day later
 
 So companies are compared on their distinctive core, titles on shared words,
@@ -30,7 +30,7 @@ _STOP = {"analyst", "associate", "senior", "junior", "the", "and", "for", "at",
 
 # Company names arrive truncated from the import — "Graham Capital
 # Management, L" is "…, LLC" cut short. That orphan fragment is not a
-# recognised suffix, so the name cores to "grahamcapitalmanagementl" while the
+# recognised suffix, so the name cores to "dorestar" while the
 # untruncated row cores to "graham", and the two never compare as the same
 # company.
 _TRUNCATED_SUFFIX_RE = re.compile(r",\s*[A-Za-z]{1,3}\.?\s*$")
@@ -41,8 +41,8 @@ def _company_key(row: dict) -> str:
 
     name = _TRUNCATED_SUFFIX_RE.sub("", (row.get("Company") or "").strip())
     # A row the scanner re-imported under the ATS's own spelling is the same
-    # application as the one whose name you corrected: "hyperiongrp" and
-    # "Howden" were two rows for one job, and keyed on the name alone they
+    # application as the one whose name you corrected: "grierock" and
+    # "Cormore" were two rows for one job, and keyed on the name alone they
     # could never be seen as a pair.
     name = company_aliases.load().get(normalize(name), name)
     return _core(name).replace(" ", "") or normalize(name).replace(" ", "")
@@ -102,8 +102,8 @@ def find(rows: list[dict], max_day_gap: int = 21) -> list[tuple[dict, dict, str]
                 pb = normalize(b.get("Position", "")).strip()
                 if pa == PLACEHOLDER and pb == PLACEHOLDER:
                     # Two unparsed rows at one company days apart: nothing
-                    # distinguishes them, which is exactly what "Fairfield
-                    # Maxwell / Analyst" and "FAIRFIELD-MAXWELL LTD / Analyst"
+                    # distinguishes them, which is exactly what "Tanicorp
+                    # Maxwell / Analyst" and "TANICORP-MAXWELL LTD / Analyst"
                     # on the same date were.
                     confidence = "sure"
                 elif pa == PLACEHOLDER or pb == PLACEHOLDER:
@@ -129,7 +129,7 @@ def find(rows: list[dict], max_day_gap: int = 21) -> list[tuple[dict, dict, str]
 
 # How much a status tells you. Dropping the row that knows the outcome in
 # favour of one still saying "Applied" would quietly lose the result — which
-# is what happened to the Mesirow pair on the first run.
+# is what happened to the Marcroft pair on the first run.
 _STATUS_RANK = {
     "offer": 5,
     "interview-rejected": 4,

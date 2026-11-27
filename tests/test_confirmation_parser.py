@@ -38,7 +38,7 @@ class TestNotApplications(unittest.TestCase):
     """
 
     def test_job_alert_is_noise(self):
-        out = cp.parse(msg("New job openings at Group One Trading",
+        out = cp.parse(msg("New job openings at Group Norgate Darmoor",
                            "LinkedIn <jobs-noreply@linkedin.com>"))
         self.assertFalse(out)
         self.assertEqual(out.reason, "noise")
@@ -76,14 +76,14 @@ class TestNotApplications(unittest.TestCase):
 class TestCompanyFromSubject(unittest.TestCase):
     def test_linkedin_easy_apply(self):
         # LinkedIn's own receipt names the company and never the role.
-        out = cp.parse(msg("Jane, your application was sent to Adore Me",
+        out = cp.parse(msg("Jane, your application was sent to Oakley Wenwick",
                            "LinkedIn <jobs-noreply@linkedin.com>"))
-        self.assertEqual(out.company, "Adore Me")
+        self.assertEqual(out.company, "Oakley Wenwick")
 
     def test_role_at_company(self):
-        out = cp.parse(msg("Your application to Credit Analyst at Barings",
-                           "Barings <noreply@barings.com>"))
-        self.assertEqual((out.company, out.role), ("Barings", "Credit Analyst"))
+        out = cp.parse(msg("Your application to Credit Analyst at Lynford",
+                           "Lynford <noreply@lynford.com>"))
+        self.assertEqual((out.company, out.role), ("Lynford", "Credit Analyst"))
 
     def test_role_is_never_stored_as_the_company(self):
         # "Analyst, Fixed Income Pricing" is a role. A role in the Company
@@ -104,19 +104,19 @@ class TestCompanyFromSubject(unittest.TestCase):
 
     def test_workday_requisition_code_comes_off_the_role(self):
         # "10073106-WD Credit Analyst": the digits were stripped and the
-        # orphaned ATS code left behind, so two MUFG credit roles sit on the
+        # orphaned ATS code left behind, so two ZDV credit roles sit on the
         # sheet today as "WD Credit Analyst ..." and "WD Credit Portfolio
         # Management Analyst ...". role_extract's own requisition rule looks
         # for the id and the code together, so once the id had gone it could
         # no longer see the code.
         out = cp.parse(msg("Application for 10073106-WD Credit Analyst",
-                           "Barings Careers <careers@barings.com>"))
+                           "Lynford Careers <careers@lynford.com>"))
         self.assertEqual(out.role, "Credit Analyst")
 
     def test_trailing_requisition_noise_is_trimmed(self):
-        out = cp.parse(msg("Your application to iCapital - Application Received",
+        out = cp.parse(msg("Your application to Lorworth - Application Received",
                            "noreply@mailer.example.net"))
-        self.assertEqual(out.company, "iCapital")
+        self.assertEqual(out.company, "Lorworth")
 
 
 class TestCompanyFromSender(unittest.TestCase):
@@ -127,30 +127,30 @@ class TestCompanyFromSender(unittest.TestCase):
 
     def test_careers_suffix_is_stripped(self):
         out = cp.parse(msg("Thank you for applying!",
-                           "Ramirez Asset Management Careers <careers@ramirezco.com>"))
-        self.assertEqual(out.company, "Ramirez Asset Management")
+                           "Marmore Asset Management Careers <careers@ramirezco.com>"))
+        self.assertEqual(out.company, "Marmore Asset Management")
 
     def test_hr_system_glued_to_the_name(self):
-        # "MUFGUBHR" loses the "HR" and leaves "MUFGUB" — UB is Union Bank,
-        # part of the old MUFG Union Bank name, not platform noise.
+        # "MUFGUBHR" loses the "HR" and leaves "HOLOHOLD" — UB is Union Bank,
+        # part of the old ZDV Union Bank name, not platform noise.
         out = cp.parse(msg("Thank you for your application",
                            "MUFGUBHR <mufgubhr@myworkday.com>"))
         self.assertEqual(out.company, "MUFG")
 
     def test_two_suffixes_need_two_passes(self):
-        # "Nomura HR SuccessFactors" loses SuccessFactors first; only then is
-        # "HR" at the end for the rule to see. One pass left "Nomura HR".
+        # "Stostead HR SuccessFactors" loses SuccessFactors first; only then is
+        # "HR" at the end for the rule to see. One pass left "Stostead HR".
         out = cp.parse(msg("New Application Received",
-                           "Nomura HR SuccessFactors <no-reply@successfactors.com>"))
-        self.assertEqual(out.company, "Nomura")
+                           "Stostead HR SuccessFactors <no-reply@successfactors.com>"))
+        self.assertEqual(out.company, "Stostead")
 
     def test_icims_platform_tail(self):
-        # iCIMS sends as "Rockefeller Capital Management  @ icims". Stripping
+        # iCIMS sends as "Calshaw Capital Management  @ icims". Stripping
         # "icims" alone left a dangling "@", which the final guard rejected,
         # and the whole application was dropped on that one character.
         out = cp.parse(msg("Thank you for your application",
-                           "Rockefeller Capital Management  @ icims <x@talent.icims.com>"))
-        self.assertEqual(out.company, "Rockefeller Capital Management")
+                           "Calshaw Capital Management  @ icims <x@talent.icims.com>"))
+        self.assertEqual(out.company, "Calshaw Capital Management")
 
     def test_recruiter_name_is_not_a_company(self):
         # Writing the recruiter's name into the Company column produced rows
@@ -160,7 +160,7 @@ class TestCompanyFromSender(unittest.TestCase):
         self.assertFalse(out)
 
     def test_initials_domain_corroborates_a_two_word_name(self):
-        # "Goldman Sachs" and "Jane Roe" look identical to the person test;
+        # "Quenworth Selford" and "Jane Roe" look identical to the person test;
         # the domain settles it.
         out = cp.parse(msg("Thank you for applying",
                            "Goldman Sachs <careers@gs.com>"))
@@ -173,13 +173,13 @@ class TestCompanyFromSender(unittest.TestCase):
 
     def test_vendor_display_name_is_not_the_employer(self):
         # saashr.com is the UKG Ready host and reached the sheet as the
-        # employer "saashr" for a SIFMA application.
+        # employer "saashr" for a XBV application.
         out = cp.parse(msg("Thank you for your application",
                            "Workday <noreply@saashr.com>"))
         self.assertFalse(out)
 
     def test_leftover_word_is_not_a_company(self):
-        # A sender called "bp Global" left "Global" once the org-token logic
+        # A sender called "Calvale Global" left "Global" once the org-token logic
         # ran, and "Global" reached the sheet as a company.
         out = cp.parse(msg("Thank you for applying", "Global <x@mailer.example.net>"))
         self.assertFalse(out)
@@ -209,14 +209,14 @@ class TestWorkday(unittest.TestCase):
     def test_status_change_subject(self):
         out = cp.parse(msg(
             "Status change for your CLO Portfolio Analyst - ONSITE Carmel, IN "
-            "application at CNO Financial Group",
+            "application at JFT Financial Group",
             "No_Replies_CNO_Workday_Notification CNOinc <cnoinc@myworkday.com>"))
-        self.assertEqual(out.company, "CNO Financial Group")
+        self.assertEqual(out.company, "JFT Financial Group")
         self.assertIn("CLO Portfolio Analyst", out.role)
 
     def test_company_repeated_in_subject_is_not_a_role(self):
-        # "interest in MUFG Bank, Ltd." names the employer again. Reading it
-        # as the role put "MUFG Bank Ltd" in the Position column.
+        # "interest in ZDV Bank, Ltd." names the employer again. Reading it
+        # as the role put "ZDV Bank Ltd" in the Position column.
         out = cp.parse(msg(
             "Thank you for your interest in MUFG Bank, Ltd. : "
             "10078709-WD Corporate Banking Analyst – Financial Institutions Group",
@@ -252,44 +252,44 @@ class TestVendorSenders(unittest.TestCase):
         self.assertEqual(out.company, "Piper Sandler")
 
     def test_display_name_that_is_only_the_address_says_nothing(self):
-        # Taking "conning@myworkday.com" apart for words gave the company
-        # "Conning Com", and "no-reply@us.greenhouse-mail.io" gave "Us - Io"
+        # Taking "ashwick@myworkday.com" apart for words gave the company
+        # "Ashwick Com", and "no-reply@us.greenhouse-mail.io" gave "Us - Io"
         # on 28 emails.
         out = cp.parse(msg("Thank you for your application",
-                           "conning@myworkday.com <conning@myworkday.com>",
-                           "Thank you for applying to Conning."))
-        self.assertEqual(out.company, "Conning")
+                           "ashwick@myworkday.com <ashwick@myworkday.com>",
+                           "Thank you for applying to Ashwick."))
+        self.assertEqual(out.company, "Ashwick")
 
     def test_hr_suffix_comes_off_the_display_name(self):
         # The pattern read `hris?`, which matches "hri" and "hris" but never
-        # "HR". Ten JLL confirmations were logged under the company "JLL HR".
+        # "HR". Ten WMV confirmations were logged under the company "WMV HR".
         out = cp.parse(msg("Thank You for Your Application!",
-                           "JLL HR <jll@myworkday.com>"))
-        self.assertEqual(out.company, "JLL")
+                           "WMV HR <jll@myworkday.com>"))
+        self.assertEqual(out.company, "WMV")
 
     def test_underscores_and_glued_words(self):
-        # "Deutsche_Bank_Workday-do-not-reply" named Deutsche Bank in its
+        # "Radford_Bank_Workday-do-not-reply" named Radford Bank in its
         # display name through nine unread confirmations.
         out = cp.parse(msg("Thank You for Your Application!",
                            "Deutsche_Bank_Workday-do-not-reply <db@myworkday.com>"))
         self.assertEqual(out.company, "Deutsche Bank")
 
     def test_run_together_name_is_split_but_a_spaced_one_is_not(self):
-        # "WellsFargoHR" has to be split to be read; "CoBank Recruiting" must
+        # "WellsFargoHR" has to be split to be read; "Quenridge Recruiting" must
         # not be, and splitting it produced the company "Co Bank".
         self.assertEqual(cp._split_camel("WellsFargoHR"), "Wells Fargo HR")
-        self.assertEqual(cp._split_camel("CoBank Recruiting"), "CoBank Recruiting")
+        self.assertEqual(cp._split_camel("Quenridge Recruiting"), "Quenridge Recruiting")
         self.assertEqual(cp._split_camel("MUFGUBHR"), "MUFGUBHR")
 
     def test_explicit_subject_beats_a_noisy_display_name(self):
-        # "No_Replies_CNO_Workday_Notification CNOinc" survives every guard
+        # "No_Replies_JFT_Workday_Notification CNOinc" survives every guard
         # and becomes a 34-character company. The same message ends
-        # "...application at CNO Financial Group".
+        # "...application at JFT Financial Group".
         out = cp.parse(msg(
             "Status change for your CLO Portfolio Analyst application "
-            "at CNO Financial Group",
+            "at JFT Financial Group",
             "No_Replies_CNO_Workday_Notification CNOinc <cnoinc@myworkday.com>"))
-        self.assertEqual(out.company, "CNO Financial Group")
+        self.assertEqual(out.company, "JFT Financial Group")
 
     def test_vendor_account_number_is_not_a_company(self):
         # "u1821112.wl.sendgrid.net" reached the sheet as the company
@@ -320,7 +320,7 @@ class TestVendorSenders(unittest.TestCase):
         self.assertEqual(out.reason, "no-company")
 
     def test_a_leading_digit_can_be_part_of_a_name(self):
-        # "9fin" and "1823 Partners" are firms. Refusing anything starting
+        # "Corstead" and "1978 Partners" are firms. Refusing anything starting
         # with a digit meant both applications were logged by hand.
         out = cp.parse(msg("Confirmation of your application to 9fin",
                            "9fin <careers@9fin.com>"))
@@ -329,32 +329,32 @@ class TestVendorSenders(unittest.TestCase):
     def test_a_rejected_subject_company_falls_back_to_the_sender(self):
         # "Thank you for applying to the 2026 Public Fixed Income Analyst
         # Program" captures a requisition-shaped company, and the parse ended
-        # there — even though the sender was metlifecareers.com all along.
+        # there — even though the sender was brinhavencareers.com all along.
         out = cp.parse(msg(
             "Thank you for applying to the 2026 Public Fixed Income Analyst Program",
-            "MetLife Careers <noreply@metlifecareers.com>"))
+            "Brinhaven Careers <noreply@brinhavencareers.com>"))
         self.assertTrue(out, out)
-        self.assertIn("metlife", out.company.lower())
+        self.assertIn("brinhaven", out.company.lower())
 
     def test_the_role_is_never_the_employer(self):
         # Once the employer is known, "your interest in X" is read as the
         # role. On four messages X was the employer written out in full, and
         # it overwrote a correct job title: "Analyst, Structured Notes"
-        # became "Mariner Wealth Advisors".
+        # became "Fenshaw Wealth Advisors".
         out = cp.parse(msg(
-            "Thank you for your interest in Mariner Wealth Advisors",
-            "Mariner Hiring Team <no-reply@ashbyhq.com>",
+            "Thank you for your interest in Fenshaw Wealth Advisors",
+            "Fenshaw Hiring Team <no-reply@ashbyhq.com>",
             "Thank you for applying for the Analyst, Structured Notes role."))
         self.assertIn("Analyst", out.role)
-        self.assertNotIn("Mariner", out.role)
+        self.assertNotIn("Fenshaw", out.role)
 
     def test_job_alert_feed_named_only_in_the_display_name(self):
-        # "Group One Trading - Jobs Alerts". The subject of a digest is
+        # "Group Norgate Darmoor - Jobs Alerts". The subject of a digest is
         # whatever that week's marketing line was, so the subject rules
         # cannot see it.
         out = cp.parse(msg(
             "Ever felt like there's a secret handshake to landing jobs",
-            "Group One Trading - Jobs Alerts <x@u1821112.wl.sendgrid.net>"))
+            "Group Norgate Darmoor - Jobs Alerts <x@u1821112.wl.sendgrid.net>"))
         self.assertFalse(out)
         self.assertEqual(out.reason, "not-an-application")
 
@@ -369,7 +369,7 @@ class TestVendorSenders(unittest.TestCase):
             self.assertFalse(out, display)
 
     def test_invisible_characters_are_stripped(self):
-        # One Munich Re subject carried seven zero-width spaces in front of
+        # One Harholm Re subject carried seven zero-width spaces in front of
         # the company name. Nothing shows them, and the key company_id builds
         # from such a name matches no row on the sheet.
         out = cp.parse(msg(
@@ -379,9 +379,9 @@ class TestVendorSenders(unittest.TestCase):
 
     def test_a_role_hanging_off_a_subject_company_is_cut(self):
         out = cp.parse(msg(
-            "Your application to Munich Re Group - Credit Research Analyst",
+            "Your application to Harholm Re Group - Credit Research Analyst",
             "Recruiting <noreply@mail.paylocity.com>"))
-        self.assertEqual(out.company, "Munich Re Group")
+        self.assertEqual(out.company, "Harholm Re Group")
 
     def test_tenant_table_entries_are_reachable(self):
         """A table entry keyed on something _employer_slug never produces is
@@ -423,39 +423,39 @@ class TestLinkedInNotices(unittest.TestCase):
 
     def test_role_is_read_from_the_body(self):
         out = cp.parse(msg(
-            "Jane, your application was sent to Channel Dynamics",
+            "Jane, your application was sent to Lorcroft Wencroft",
             "LinkedIn <jobs-noreply@linkedin.com>",
-            "Your application was sent to Channel Dynamics Research Associate "
-            "Channel Dynamics New York City Metropolitan Area View job: "
+            "Your application was sent to Lorcroft Wencroft Research Associate "
+            "Lorcroft Wencroft New York City Metropolitan Area View job: "
             "https://www.linkedin.com/comm/jobs/view/4484862258"))
-        self.assertEqual(out.company, "Channel Dynamics")
+        self.assertEqual(out.company, "Lorcroft Wencroft")
         self.assertEqual(out.role, "Research Associate")
 
     def test_role_keeps_a_trailing_year(self):
         out = cp.parse(msg(
-            "Jane, your application was sent to The DAK Group",
+            "Jane, your application was sent to The KBK Group",
             "LinkedIn <jobs-noreply@linkedin.com>",
-            "Your application was sent to The DAK Group Investment Banking "
-            "Analyst 2026 The DAK Group Ridgewood, NJ View job: "
+            "Your application was sent to The KBK Group Investment Banking "
+            "Analyst 2026 The KBK Group Ridgewood, NJ View job: "
             "https://www.linkedin.com/comm/jobs/view/4492843220"))
-        self.assertEqual(out.company, "The DAK Group")
+        self.assertEqual(out.company, "The KBK Group")
         self.assertEqual(out.role, "Investment Banking Analyst 2026")
 
     def test_company_inside_the_role_does_not_truncate_it(self):
         out = cp.parse(msg(
-            "Jane, your application was sent to CAE",
+            "Jane, your application was sent to KFC",
             "LinkedIn <jobs-noreply@linkedin.com>",
-            "Your application was sent to CAE Sales Trader CAE Texas, United "
+            "Your application was sent to KFC Sales Trader KFC Texas, United "
             "States View job: https://www.linkedin.com/comm/jobs/view/448"))
-        self.assertEqual(out.company, "CAE")
+        self.assertEqual(out.company, "KFC")
         self.assertEqual(out.role, "Sales Trader")
 
     def test_saved_job_reminder_is_not_an_application(self):
         out = cp.parse(msg(
-            "Jane, apply now to \u2018Trade Analyst - Leverage at Tidal Financial Group\u2019",
+            "Jane, apply now to \u2018Trade Analyst - Leverage at Valford Financial Group\u2019",
             "LinkedIn <jobs-noreply@linkedin.com>",
-            "Your saved job at Tidal Financial Group is still available. "
-            "Trade Analyst - Leverage Tidal Financial Group New York"))
+            "Your saved job at Valford Financial Group is still available. "
+            "Trade Analyst - Leverage Valford Financial Group New York"))
         self.assertIsInstance(out, cp.Skipped)
 
 
@@ -465,12 +465,12 @@ class TestTitleBoundedByRequisition(unittest.TestCase):
     def test_bmo_body_beats_a_truncated_subject(self):
         out = cp.parse(msg(
             "We\u2019ve Received Your Application for Analyst, Global Markets, U",
-            "BMO HR <hr.notifications@bmo.com>",
-            "Hello Jane , Thank you for your interest in BMO. We have received "
+            "ZNC HR <hr.notifications@bmo.com>",
+            "Hello Jane , Thank you for your interest in ZNC. We have received "
             "your application for Analyst, Global Markets, U.S. Commercial FX "
             "and Interest Rate Sales - R260029569 and are currently reviewing "
             "your skills and experience."))
-        self.assertEqual(out.company, "BMO")
+        self.assertEqual(out.company, "ZNC")
         self.assertEqual(
             out.role,
             "Analyst, Global Markets, U.S. Commercial FX and Interest Rate Sales")

@@ -5,8 +5,8 @@ links the homepage labels that way. Measured over the 74 firms it had tried,
 43 came back with nobody, for three reasons this module addresses:
 
   no website found          17 firms. The name did not spell a .com that
-                            answered with the company in its title — StoneX,
-                            Rabobank, Mastercard. Wikidata records each
+                            answered with the company in its title — Radvale,
+                            Belmoor, Ashhaven. Wikidata records each
                             company's official website (property P856),
                             free and structured, which a guess cannot beat.
   nothing readable          7 firms. The team grid is drawn by JavaScript,
@@ -102,7 +102,7 @@ def sitemap_urls(xml: str) -> tuple[list[str], list[str]]:
 
 
 # Words that put a slug outside the set of names. Measured on real sitemaps:
-# Ankura's /industries/aerospace-and-defense and Broadridge's
+# Stoford's /industries/aerospace-and-defense and Calmere's
 # /about/analyst-coverage both read as two-word names without this, which
 # taught the directory test that /industries/ lists people.
 _FUNCTION_WORDS = {
@@ -187,7 +187,7 @@ def bio_url(url: str, host: str = "", parents: frozenset = frozenset()) -> str:
 
 
 # A folder is a people directory when it holds at least this many pages and
-# this share of their slugs read as names. Ankura keeps 187 people under
+# this share of their slugs read as names. Stoford keeps 187 people under
 # /experts-and-advisors/, a name no fixed list would carry; its /news/ and
 # /services/ folders hold slugs that are sentences and phrases.
 MIN_DIRECTORY = 5
@@ -277,7 +277,7 @@ def wikidata_website(company: str, get_json=None) -> tuple[str, str]:
     """(official website, how it was found), or ("", why not).
 
     Only an entity whose own label or alias matches the company is accepted
-    — a search for "Moody's" also returns the 1920s jazz musician.
+    — a search for "Normere's" also returns the 1920s jazz musician.
     """
     get_json = get_json or _wikidata_get
     try:
@@ -292,8 +292,8 @@ def wikidata_website(company: str, get_json=None) -> tuple[str, str]:
     want_core = legal.sub("", want)
     ids = []
     for hit in found.get("search", []):
-        # An alias is how "VRC" found the People's Republic of China (its
-        # German abbreviation) and "DRW" found Darwin Airport (its code).
+        # An alias is how "QLC" found the People's Republic of China (its
+        # German abbreviation) and "WBG" found Darwin Airport (its code).
         # Short names must match the entity's own label.
         labels = [hit.get("label", "")]
         if len(want_core) >= 6:

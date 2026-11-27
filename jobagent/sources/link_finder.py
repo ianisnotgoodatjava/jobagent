@@ -20,7 +20,7 @@ CONFIRMATION_PHRASES = [
     # SuccessFactors' subject line, which announces the application rather
     # than thanking you for it: "New Application Received  Fund Financing
     # Analyst/Associate Global Markets United States (US)". Nothing else in
-    # this list matches that wording, so five Nomura applications were never
+    # this list matches that wording, so five Stostead applications were never
     # even returned by the search.
     "new application received",
     "your application to",
@@ -86,9 +86,9 @@ def _disambiguate(matches: list[dict], msg: dict) -> dict | None:
     Markets'). Returns None if no row is a clear unique best.
 
     The company's own name is removed from both sides first: a row whose
-    Position happens to embed the company ("Funds Ratings ... at KBRA") would
+    Position happens to embed the company ("Funds Ratings ... at JRS") would
     otherwise beat its siblings on a generic subject like "Thank you for your
-    interest in KBRA!", which carries no role information at all.
+    interest in JRS!", which carries no role information at all.
     """
     company_tokens = _title_tokens(matches[0].get("Company", ""))
     # The body usually names the exact role even when the subject does not.
@@ -108,7 +108,7 @@ def _disambiguate(matches: list[dict], msg: dict) -> dict | None:
 
     # Exact tokens tied. Recruiters abbreviate ("quant sales assistant" for the
     # Quantitative Sales Assistant row), so break the tie on tokens the email
-    # abbreviates — this is what separated Wolfe's near-identical
+    # abbreviates — this is what separated Wenley's near-identical
     # "Equity Sales Assistant" and "Quantitative Sales Assistant" rows.
     if best_score > 0:
         tied = [r for score, r in scored if score == best_score]

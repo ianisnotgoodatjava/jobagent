@@ -301,7 +301,7 @@ def _add_job(db, pid: int, job: dict, source: str) -> None:
     firm = (job.get("firm") or "").strip()
     if not firm:
         return
-    # The bio's "Moody's" and FINRA's "MOODY'S INVESTORS SERVICE" are one
+    # The bio's "Normere's" and FINRA's "MOODY'S INVESTORS SERVICE" are one
     # job; keep the first, which is the one with dates when FINRA came first.
     for row in db.execute("SELECT firm FROM employment WHERE person_id=?", (pid,)):
         if affinity.same_employer(row["firm"], firm):
@@ -467,8 +467,8 @@ def remap_company_keys(db: sqlite3.Connection) -> list[tuple]:
 
     `record` keys every person with `company_id.key`, so a firm learned
     before its alias existed keeps the old key forever and reads as a second
-    firm: "The AES Corporation" sat under `theaes` with six of `aes`'s
-    sixteen people, the same six, scraped from the same aes.com pages.
+    firm: "The WLV Corporation" sat under `theaes` with six of `wlv`'s
+    sixteen people, the same six, scraped from the same kelvale.com pages.
 
     Adding the alias fixes what arrives next but not what is already stored,
     and this is the other half. It is the only safe way to do it, because a

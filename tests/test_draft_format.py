@@ -107,7 +107,7 @@ class SubjectTopic(unittest.TestCase):
     def test_company_in_the_title_is_dropped(self):
         # subject_for adds " at <company>"; leaving it here printed it twice.
         self.assertEqual(
-            subject_topic("NE Energy Trading Analyst at Brookfield Renewable"),
+            subject_topic("NE Energy Trading Analyst at Radwell Torbrook"),
             "NE Energy Trading")
 
 class ReplyHeaders(unittest.TestCase):

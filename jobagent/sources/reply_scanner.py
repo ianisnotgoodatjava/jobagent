@@ -169,8 +169,8 @@ def scan(days_back: int = 460, dry_run: bool = False,
         if ev:
             interview_ev.setdefault(rn, f"email \"{ev}\"")
             # An invite proves a process is moving, but Network asks whether
-            # you spoke to a *person*. Nasdaq was marked networked off an
-            # invite from nasdaq@myworkday.com — nobody there ever wrote to
+            # you spoke to a *person*. Corfield was marked networked off an
+            # invite from corfield@myworkday.com — nobody there ever wrote to
             # you. Only a human on the company's own domain counts.
             if (not interview_signals.is_automated(msg.get("from", ""), msg.get("subject", ""))
                     and company_in_sender(row["Company"], msg.get("from", ""))
@@ -178,7 +178,7 @@ def scan(days_back: int = 460, dry_run: bool = False,
                 network_ev.setdefault(rn, f"interview invite from {msg['from'][:35]}")
 
     # --- 1b. Your own thank-you notes --------------------------------------
-    # These survive when the company's side does not: Gilmartin never sent a
+    # These survive when the company's side does not: Penridge never sent a
     # rejection email, but your "thank you for your time earlier today" note
     # proves the interview happened.
     sent_query = (
@@ -236,7 +236,7 @@ def scan(days_back: int = 460, dry_run: bool = False,
     for rn, ev in sorted(interview_ev.items()):
         row = by_number[rn]
         # A row you have ruled on is never re-derived. This is what stops the
-        # same coffee-chat note re-flagging bp and Liberty Mutual as
+        # same coffee-chat note re-flagging bp and Roston Belworth as
         # interviews after you have already said they were not.
         if corrections.is_locked(row, "Status"):
             continue

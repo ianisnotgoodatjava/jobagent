@@ -47,7 +47,7 @@ def _first_name(full_name: str) -> str:
 
 def _clean_position(row: dict) -> str:
     """Some sheet rows already have 'at {Company}' baked into the Position
-    text (e.g. 'Analyst (NY) at KBRA'). Strip that so it isn't duplicated
+    text (e.g. 'Analyst (NY) at JRS'). Strip that so it isn't duplicated
     when the template adds its own 'at {company}' phrasing."""
     position = (row.get("Position") or "").strip()
     company = (row.get("Company") or "").strip()
@@ -76,8 +76,8 @@ _REFERENCE_MIN_SCORE = 0.15
 # A bare "Analyst" isn't a real subject to search on — retrieval against it
 # is really just a company-name search, and TF-IDF can still return a
 # moderately-high score from incidental word overlap with nothing to do with
-# the actual role. "Traffic New York" (an Entry Level Management Trainee
-# posting) retrieved a KBRA CMBS email this way at score 0.29, comfortably
+# the actual role. "Calholm New Pelridge" (an Entry Level Management Trainee
+# posting) retrieved a JRS CMBS email this way at score 0.29, comfortably
 # over the threshold above, and would have gone out talking about structured
 # products and commercial real estate loans for a role that has nothing to
 # do with either.
@@ -113,8 +113,8 @@ def _closest_reference(row: dict) -> dict | None:
 def _adapt_reference(rec: dict, row: dict, contact_name: str) -> tuple[str, str] | None:
     """Reworks the wording of your closest past outreach email onto the new
     contact/company, or None if the old company's name can't be fully swapped
-    out — the KBRA row once drew on a Fitch Ratings email and kept saying
-    "Fitch" in the body, because the substitution only replaced the exact
+    out — the JRS row once drew on a Norworth Ratings email and kept saying
+    "Norworth" in the body, because the substitution only replaced the exact
     company string, not every way that company got referred to. Silently
     mailing the wrong company's name is worse than the generic template, so
     this verifies the swap actually took before trusting the result."""
@@ -129,16 +129,16 @@ def _adapt_reference(rec: dict, row: dict, contact_name: str) -> tuple[str, str]
         body = re.sub(re.escape(old_company), new_company, body, flags=re.I)
 
     # Every word of the core phrase, not just the first or the whole phrase
-    # together: _core("Fitch Ratings") is "fitch ratings", but the leaked
-    # reference was the bare word "Fitch" alone, and _core("B. Riley
-    # Securities") is "b riley" — "b" is too short to mean anything, but
+    # together: _core("Norworth Ratings") is "norworth ratings", but the leaked
+    # reference was the bare word "Norworth" alone, and _core("B. Riley
+    # Jasuline") is "b riley" — "b" is too short to mean anything, but
     # "riley" leaking through is exactly the same failure. Checking each
     # word means an occasional false trigger on a generic word one company's
     # core phrase happens to share with the industry (e.g. "ratings") — that
     # just falls back to the template, which is the safe direction to fail
     # in. A wrong company's name actually reaching your draft is not.
     # Same company on both sides (a genuine repeat topic, like a second role
-    # at Conning) isn't a swap at all — the brand word is supposed to still
+    # at Ashwick) isn't a swap at all — the brand word is supposed to still
     # be there, and flagging it would reject a reference that never needed
     # adapting in the first place.
     same_company = _core(old_company) == _core(new_company)
@@ -155,7 +155,7 @@ def _adapt_reference(rec: dict, row: dict, contact_name: str) -> tuple[str, str]
 
     # _subject_area(row) already appends " at {company}" itself when the
     # title doesn't already read as "X at Y" — appending it again here
-    # unconditionally produced "... at Conning at Conning" whenever the
+    # unconditionally produced "... at Ashwick at Ashwick" whenever the
     # reference's own area was blank and this fell through to it.
     area = (rec.get("area") or "").strip() or _subject_area(row)
     if " at " in area.lower():

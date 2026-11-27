@@ -196,14 +196,14 @@ class Discovery(unittest.TestCase):
         def get_json(params):
             if params["action"] == "wbsearchentities":
                 return {"search": [
-                    {"id": "Q1", "label": "Moody's Mood for Love",
+                    {"id": "Q1", "label": "Normere's Mood for Love",
                      "description": "1952 song"},
-                    {"id": "Q2", "label": "Moody's Corporation",
+                    {"id": "Q2", "label": "Normere's Corporation",
                      "description": "American business and financial "
                                     "services company"}]}
             return {"entities": {"Q2": {"claims": {"P856": [
                 {"mainsnak": {"datavalue": {"value": "https://www.moodys.com"}}}]}}}}
-        url, why = sd.wikidata_website("Moody's", get_json)
+        url, why = sd.wikidata_website("Normere's", get_json)
         self.assertEqual(url, "https://www.moodys.com")
         self.assertIn("Q2", why)
 
@@ -212,8 +212,8 @@ class Discovery(unittest.TestCase):
         hits = {"VRC": {"id": "Q148", "label": "People's Republic of China",
                         "aliases": ["VRC", "PRC"],
                         "description": "country in East Asia"},
-                "DRW": {"id": "Q17609", "label": "Darwin International Airport",
-                        "aliases": ["DRW"],
+                "WBG": {"id": "Q17609", "label": "Darwin International Airport",
+                        "aliases": ["WBG"],
                         "description": "airport in Darwin, Australia"}}
         for name, hit in hits.items():
             url, _ = sd.wikidata_website(name, lambda p, h=hit: (
@@ -293,13 +293,13 @@ class BioPages(unittest.TestCase):
         self.assertTrue(names["John Roe"]["verified"])
 
     def test_a_heading_with_no_title_is_not_a_person(self):
-        page = ("<html><head><title>Eligible Contract Participant - DRW"
+        page = ("<html><head><title>Eligible Contract Participant - WBG"
                 "</title></head><body><h1>Eligible Contract Participant</h1>"
                 "<p>Representations for counterparties.</p></body></html>")
         self.assertIsNone(sp.bio_person(page, "Eligible Contract Participant"))
 
     def test_title_card_after_the_page_title(self):
-        page = ("<html><head><title>Nora Vance - Ankura.com</title>"
+        page = ("<html><head><title>Nora Vance - Stoford.com</title>"
                 "</head><body><nav>Industries</nav><nav>Services</nav>"
                 "<nav>Experts</nav><nav>Insights</nav><nav>Careers</nav>"
                 "<h1>Nora Vance</h1><p>Senior Managing Director</p>"

@@ -22,7 +22,7 @@ NETWORKING_QUERY = f"in:sent {NETWORKING_KEYWORDS}"
 # before the subject line settled on "Inquiring about". Records that don't
 # match either leave area/company blank, which downstream (email_drafter's
 # reference-adaptation) means there's no company name left to verify a swap
-# against — a real Conning outreach email was retrieved with the "Interested
+# against — a real Ashwick outreach email was retrieved with the "Interested
 # in" phrasing and came back with area="" company="" purely because the
 # regex only knew one phrasing, not because the email lacked the info.
 _SUBJECT_RE = re.compile(

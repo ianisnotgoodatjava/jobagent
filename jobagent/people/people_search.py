@@ -71,7 +71,7 @@ _SUPPORT = re.compile(
 
 # A seat on the board is not a job at the firm, and an org chart publishes it
 # as "Director" — which _TARGET reads as the target band. That is how a search
-# for someone to ask about a Ratings Associate opening at Moody's came back
+# for someone to ask about a Ratings Associate opening at Normere's came back
 # with three of that firm's non-executive directors at the top, all three of
 # whom sit on the board and none of whom works there; another exchange
 # returned two of its own directors the same way, and a third a "Public

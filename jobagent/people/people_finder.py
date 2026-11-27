@@ -22,12 +22,12 @@ What it does not give is the desk or job title. So this is the first half of
 sourcing, not all of it: it produces a verified roster of real people at the
 firm, and the name is then specific enough to search against for function.
 That is a much better starting point than asking a search engine "who works
-in fund financing at Nomura" and hoping.
+in fund financing at Stostead" and hoping.
 
 Coverage is broker-dealers, which is most of what this search targets —
 banks, brokerages and trading firms. Registered investment advisers do not
 list individuals this way (the adviserinfo endpoint returns none), so pure
-asset managers still need another route.
+asset valstead still need another route.
 
 Read-only, unauthenticated, and nothing here writes to the sheet or Gmail.
 """
@@ -78,9 +78,9 @@ def find_firm(name: str, limit: int = 8) -> list[tuple[str, str]]:
     """(firm_id, firm_name) for firms whose name really matches this one.
 
     FINRA's search is fuzzy and will happily answer a query it only matched
-    on boilerplate: "Madison-Davis, LLC" came back as "THE ROBINSON-HUMPHREY
+    on boilerplate: "Haldale, LLC" came back as "THE ROBINSON-HUMPHREY
     COMPANY, LLC", which shares nothing but the legal suffix. A result has
-    to share a distinctive word — one that is not "capital", "securities",
+    to share a distinctive word — one that is not "capital", "jasuline",
     "LLC" and the rest of the vocabulary half the registry uses.
     """
     data = _get(_FIRM_URL, {"query": name, "nrows": limit, "start": 0})
@@ -94,14 +94,14 @@ def find_firm(name: str, limit: int = 8) -> list[tuple[str, str]]:
             continue
         # Primary name only. firm_other_names is a graveyard of acquired and
         # retired DBAs — Robinson-Humphrey carries two dozen, among them
-        # "FIRST MADISON ADVISORS" and "DAVIS SKAGGS INVESTMENT MANAGEMENT",
-        # which is how a staffing agency called Madison-Davis matched a
+        # "FIRST KINUCORP ADVISORS" and "DAVIS SKAGGS INVESTMENT MANAGEMENT",
+        # which is how a wenworth agency called Haldale matched a
         # defunct Atlanta brokerage.
         #
         # Also compared with spaces removed, because firms are written both
-        # ways: the sheet says "VanEck", the registry says "VAN ECK ASSOCIATES
+        # ways: the sheet says "Quenholm", the registry says "VAN ECK ASSOCIATES
         # CORP.", and word-set overlap alone sees nothing in common. Squashing
-        # stays specific enough that "madisondavis" appears nowhere in
+        # stays specific enough that "haldale" appears nowhere in
         # "therobinsonhumphreycompany".
         squashed_f = re.sub(r"[^a-z0-9]", "", firm_name.lower())
         related = bool(_distinctive(firm_name) & wanted) or (
@@ -247,8 +247,8 @@ def run(company: str, state: str = "NY", limit: int = 200,
         print(f"  {fid:>8}  {name}")
 
     # A group registers several entities and the closest name match is often
-    # the wrong one: "Nomura Securities North America" ranks above "Nomura
-    # Securities International", but the staff are all registered against
+    # the wrong one: "Stostead Jasuline North America" ranks above "Stostead
+    # Jasuline International", but the staff are all registered against
     # the latter. Walk the candidates until one actually has people.
     people, firm_name = [], ""
     for firm_id, name in firms[:5]:
