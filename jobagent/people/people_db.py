@@ -165,7 +165,12 @@ _PEOPLE_COLUMNS = {
 }
 
 
-def connect(path: str = DB_PATH) -> sqlite3.Connection:
+def connect(path: str | None = None) -> sqlite3.Connection:
+    # The default is read now, not frozen when this module loaded: a
+    # default argument bound to DB_PATH kept pointing at the real database
+    # however DB_PATH was redirected, which is how tests wrote invented
+    # people into it.
+    path = path or DB_PATH
     # WAL and a busy timeout (storage.connect_db): the scheduled run and the
     # MCP server can now write at the same moment.
     db = storage.connect_db(path)

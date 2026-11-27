@@ -21,7 +21,7 @@ sys.path.insert(0, ROOT)
 
 from jobagent.console import commands  # noqa: E402
 from jobagent.console.main import build_parser, from_here  # noqa: E402
-from jobagent.core import home, launchd, storage  # noqa: E402
+from jobagent.core import home, launchd  # noqa: E402
 
 
 class TestHome:
@@ -57,20 +57,41 @@ class TestHome:
 
 
 class TestStateFollowsHome:
-    def test_both_roots_are_inside_home(self):
-        here = home.home()
-        assert os.path.isabs(storage.DATA_DIR) and os.path.isabs(storage.CACHE_DIR)
-        assert os.path.dirname(storage.DATA_DIR) == here
-        assert os.path.dirname(storage.CACHE_DIR) == here
-        assert os.path.dirname(storage.database("people")) == storage.CACHE_DIR
+    """Where state goes by default -- read in a fresh process, because this
+    test run deliberately redirects the roots (tests/conftest.py)."""
 
-    def test_the_existing_layout_is_unchanged_in_a_checkout(self, monkeypatch):
-        monkeypatch.delenv(home.ENV, raising=False)
-        if os.environ.get("JOBAGENT_DATA_DIR") or os.environ.get("JOBAGENT_CACHE_DIR"):
-            pytest.skip("a state root is overridden in this environment")
-        assert storage.DATA_DIR == os.path.join(ROOT, "data")
-        assert storage.CACHE_DIR == os.path.join(ROOT, "logs")
-        assert storage.LEGACY_DIR == os.path.join(ROOT, "logs")
+    @staticmethod
+    def _defaults(**env) -> dict:
+        import json
+        import subprocess
+        import sys
+        clean = {k: v for k, v in os.environ.items()
+                 if k not in ("JOBAGENT_DATA_DIR", "JOBAGENT_CACHE_DIR",
+                              home.ENV)}
+        clean.update(env)
+        script = ("import json, sys; sys.path.insert(0, sys.argv[1]);"
+                  "from jobagent.core import home, storage;"
+                  "print(json.dumps({'home': home.home(),"
+                  " 'data': storage.DATA_DIR, 'cache': storage.CACHE_DIR,"
+                  " 'legacy': storage.LEGACY_DIR,"
+                  " 'db': storage.database('people')}))")
+        out = subprocess.run([sys.executable, "-c", script, ROOT], env=clean,
+                             capture_output=True, text=True, timeout=60)
+        assert out.returncode == 0, out.stderr
+        return json.loads(out.stdout)
+
+    def test_both_roots_are_inside_home(self, tmp_path):
+        d = self._defaults(**{home.ENV: str(tmp_path)})
+        assert os.path.isabs(d["data"]) and os.path.isabs(d["cache"])
+        assert os.path.dirname(d["data"]) == d["home"] == str(tmp_path)
+        assert os.path.dirname(d["cache"]) == d["home"]
+        assert os.path.dirname(d["db"]) == d["cache"]
+
+    def test_the_existing_layout_is_unchanged_in_a_checkout(self):
+        d = self._defaults()
+        assert d["data"] == os.path.join(ROOT, "data")
+        assert d["cache"] == os.path.join(ROOT, "logs")
+        assert d["legacy"] == os.path.join(ROOT, "logs")
 
 
 class TestFilesNamedOnTheCommandLine:
